@@ -1,0 +1,33 @@
+<div class="container-fluid colored-section">
+  <h1 class="big-heading">Register</h1>
+</div>
+
+<div class="container-fluid">
+  <form class="create-article" action="/register" method="POST">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" name="username">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" name="password">
+    </div>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" class="form-control" name="name" placeholder="firstname lastname">
+    </div>
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="text" class="form-control" name="phone" placeholder="Enter your phone number">
+    </div>
+    <div class="form-group">
+      <label>Pick a role</label>
+      <select class="" name="role">
+        <option value="vendor">Vendor</option>
+        <option value="client">Client</option>
+        <option value="dispatch">Dispatch</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-dark">Register</button>
+  </form>
+</div>

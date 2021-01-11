@@ -1,0 +1,22 @@
+<div class="container-fluid colored-section">
+  <h1 class="big-heading">Create a new shop</h1>
+</div>
+
+<div class="container-fluid">
+  <p>Your shop would not be created until payment ($20) is approved</p>
+  <form class="create-article" action="/createshop" method="POST">
+    <div class="form-group">
+      <label for="text">Shop Name</label>
+      <input type="text" class="form-control" name="name">
+    </div>
+    <div class="form-group">
+      <label for="password">Category</label>
+      <select class="" name="category">
+        <option value="fashion">Fashion</option>
+        <option value="electronics">Electronics</option>
+        <option value="bookstore">Bookstore</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-dark">Create Store</button>
+  </form>
+</div>

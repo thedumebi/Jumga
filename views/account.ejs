@@ -1,0 +1,9 @@
+<h1>Welcome <%= vendor.username %></h1>
+<button class="btn btn-dark" type="button" onclick="location.href='/createshop'">Create a shop</button>
+
+
+<% vendor.shops.map((shop) => { %>
+  <p><%= shop.name %></p>
+  <p><%= shop.category %></p>
+  <button type="button" name="button" onclick="location.href='/account/<%= shop._id %>'">visit shop</button>
+<% }); %>
