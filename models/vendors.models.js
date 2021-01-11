@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
+const localStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
+const clientModel = require("./clients.model");
+const dispatchModel = require("./dispatch.model");
 
 const vendorSchema = new mongoose.Schema({
   id: {
@@ -13,23 +16,49 @@ const vendorSchema = new mongoose.Schema({
   password: String,
   phone_number: String,
   shops: Array,
+  role: String,
   created_at: {
     type: Date,
     default: Date.now(),
   },
 });
 
-vendorSchema.plugin(passportLocalMongoose);
-
 const vendorModel = mongoose.model("Vendor", vendorSchema);
-passport.use(vendorModel.createStrategy());
-passport.serializeUser(function (vendor, done) {
-  done(null, vendor.id);
+
+passport.use("vendorLocal", new localStrategy(function(username, password, done) {
+  vendorModel.findOne({username: username}, function(err, vendor) {
+    if (err) {return done(err);}
+    if (!vendor) {
+      return done(null, false, {message: "Incorrect username!"});
+    }
+    bcrypt.compare(password, vendor.password, function(err, result) {
+      if (err) {console.log(err);}
+      if (result == true) {
+        return done(null, vendor);
+      } else {
+        return done(null, false, {message: "Incorrect password!"});
+      }
+    });
+  });
+}));
+
+passport.serializeUser(function (user, done) {
+  const key = {
+    id: user._id,
+    type: user.role
+  };
+  done(null, key);
+  console.log(key);
 });
-passport.deserializeUser(function (id, done) {
-  vendorModel.findById(id, function (err, vendor) {
-    done(err, vendor);
+passport.deserializeUser(function (key, done) {
+  console.log("des-key", key);
+  const model = key.type === "vendor" ? vendorModel : key.type === "client" ? clientModel : dispatchModel;
+  console.log("model", model);
+  model.findById(key.id, function (err, user) {
+    done(err, user);
+    console.log("deserialize", user);
   });
 });
+
 
 module.exports = vendorModel;

@@ -11,7 +11,7 @@ exports.loginVendor = async function (req, res) {
       if (err) {
         console.log(err);
       } else {
-        passport.authenticate("local", { failureRedirect: "/login" })(req, res,
+        passport.authenticate("vendorLocal", { failureRedirect: "/login", failureMessage: true })(req, res,
           function () {
             res.redirect("/account");
           }
