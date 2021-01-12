@@ -5,7 +5,7 @@ const axios = require('axios');
 var forge = require("node-forge");
 const { createShop } = require("./shops");
 
-exports.makeShopPayment = async function(req, res) {
+exports.makeShopPayment = function(req, res) {
     const shopFee = 20;
     const tx_ref = crypto.randomBytes(16).toString("hex");
     const text = JSON.stringify({
@@ -33,24 +33,10 @@ exports.makeShopPayment = async function(req, res) {
             Authorization: process.env.SECRET_KEY
         }
     }
-    request(options, async function(error, response, body) {
+    request(options, function(error, response, body) {
         console.log(response.statusCode);
         if (!error && response.statusCode === 200) {
-            await axios({
-                method: "post",
-                url: "https://api.flutterwave.com/v3/validate-charge",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": process.env.SECRET_KEY
-                },
-                data: {
-                    otp: "12345",
-                    flw_ref: body.data.flw_ref
-                }
-            }).then(res => {
-                verifyTransaction(res.data.data.id);
-            }).catch(e => console.log(e));
-            createShop(req, res);
+            validateTransaction(body, req, res)
         }
     });
 }
@@ -67,7 +53,27 @@ function encrypt(key, text) {
     return forge.util.encode64(encrypted.getBytes());
 }
 
-function verifyTransaction(id) {
+async function validateTransaction(body, req, res) {
+    await axios({
+        method: "post",
+        url: "https://api.flutterwave.com/v3/validate-charge",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": process.env.SECRET_KEY
+        },
+        data: {
+            otp: "12345",
+            flw_ref: body.data.flw_ref
+        }
+    }).then(res => {
+        console.log("validated");
+        verifyTransaction(res.data.data.id);
+    }).then(() => {
+        createShop(req, res);
+    }).catch(e => console.log(e));
+}
+
+async function verifyTransaction(id) {
     var options = {
         method: 'GET',
         url: `https://api.flutterwave.com/v3/transactions/${id}/verify`,
@@ -77,8 +83,10 @@ function verifyTransaction(id) {
         }
       };
       request(options, function (error, response) { 
+          const info = JSON.parse(response.body);
         if (error) throw new Error(error);
-        if (!error && response.status == "success" && response.data.charged_amount === shopFee) {
+        if (!error && info.status == "success" && info.data.charged_amount === info.data.amount) {
+            console.log("verified");
             return true;
         }
       });

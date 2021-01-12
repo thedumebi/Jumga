@@ -18,6 +18,7 @@ const { loginClient } = require("./login/clients.login");
 const { loginDispatch } = require("./login/dispatch.login");
 const { ensureOnlyVendor } = require("./models/control");
 const vendorModel = require("./models/vendors.models");
+const { createShop } = require("./create/shops");
 const { makeShopPayment } = require("./create/shopPayment");
 
 const app = express();

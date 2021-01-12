@@ -3,7 +3,7 @@
 
 
 <% vendor.shops.map((shop) => { %>
+  <p><%= shop.id %></p>
   <p><%= shop.name %></p>
-  <p><%= shop.category %></p>
-  <button type="button" name="button" onclick="location.href='/account/<%= shop._id %>'">visit shop</button>
+  <button type="button" name="button" onclick="location.href='/shops/<%= shop.id %>'">visit shop</button>
 <% }); %>
