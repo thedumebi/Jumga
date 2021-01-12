@@ -20,6 +20,9 @@ const { ensureOnlyVendor } = require("./models/control");
 const vendorModel = require("./models/vendors.models");
 const { createShop } = require("./create/shops");
 const { makeShopPayment } = require("./create/shopPayment");
+const shopModel = require("./models/shops.model");
+const { createItem } = require("./create/items");
+const itemModel = require("./models/items.model");
 
 const app = express();
 
@@ -90,50 +93,66 @@ app.route("/createshop")
   .post(ensureOnlyVendor, function (req, res) {
     makeShopPayment(req, res);
   });
-
-app.get("/account/:shopId", function (req, res) {
-  const shopId = req.params.shopId;
-  Vendor.findOne(
-    { shops: { $elemMatch: { _id: shopId } } },
-    function (err, foundVendor) {
-      if (err) {
-        console.log(err);
-      } else {
-        const shop = foundVendor.shops.filter((shop) => {
-          return shop._id == shopId;
-        });
-        res.render("shop", { shop: shop[0] });
-      }
+  
+app.get("/shops", function(req, res) {
+  shopModel.find(function(err, shops) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("shops", {shops: shops});
     }
-  );
+  });
 });
 
-app.route("/account/:shopId/additem")
-  .get(function (req, res) {
-    const shopId = req.params.shopId;
-    res.render("item", { shopId: shopId });
-  })
-  .post(function (req, res) {
-    const shopId = req.params.shopId;
-    const item = new Item({
-      name: req.body.name,
-      price: req.body.price,
-    });
-    Vendor.findOne(
-      { shops: { $elemMatch: { _id: shopId } } },
-      function (err, foundVendor) {
-        if (err) {
-          console.log(err);
-        } else {
-          const shop = foundVendor.shops.filter((shop) => {
-            return shop._id == shopId;
-          });
-          shop[0].items.push(item);
-          foundVendor.save(() => res.redirect("/account/" + shopId));
-        }
-      }
-    );
+app.get("/shops/:shopId", function (req, res) {
+  const shopId = req.params.shopId;
+  shopModel.findOne({id: shopId}, function(err, foundShop) {
+    if (!err) {
+      res.render("shop", {shop: foundShop, user: req.user});
+    } else {
+      res.send("shop does not exist");
+    }
   });
+});
+
+app.route("/vendor/:shopId/additem")
+  .get(ensureOnlyVendor, function (req, res) {
+    const shopId = req.params.shopId;
+    res.render("addItem", { shopId: shopId });
+  })
+  .post(ensureOnlyVendor, function (req, res) {
+    createItem(req, res);
+  });
+
+app.get("/items", function(req, res) {
+  itemModel.find(function(err, foundItems) {
+    if (!err) {
+      if (foundItems) {
+        res.render("items", {items: foundItems})
+      } else {
+        alert("No items yet");
+        res.redirect("/");
+      }
+    }
+  });
+});
+
+app.get("/items/:itemId", function(req, res) {
+  const itemId = req.params.itemId;
+  itemModel.findOne({id: itemId}, function(err, foundItem) {
+    if (!err) {
+      res.render("item", {item: foundItem, user: req.user});
+    }
+  });
+});
+
+app.get("/items/:itemId/buy", function(req, res) {
+  if (req.isAuthenticated()) {
+    res.send("buy");
+  } else {
+    res.redirect("/login");
+  }
+});
 
 app.get("/logout", function (req, res) {
   req.logout();

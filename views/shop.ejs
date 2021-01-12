@@ -1,15 +1,18 @@
 <h1><%= shop.name %></h1>
-<p><%= shop.category %></p>
+<p><%= shop.country %></p>
 
 <% if (shop.items) { %>
   <% shop.items.map((item) => { %>
-    <p><%= item.name %></p>
-    <p><%=item.price %></p>
+    <p>Name: <%= item.name %></p>
+    <p>Amount: <%=item.price %></p>
+    <button type="button" name="button" onclick="location.href='/items/<%= item.id%>'">view item</button>
   <% }); %>
 <% } %>
-<button type="button" name="button" onclick="location.href='/account/<%= shop._id %>/additem'">add new item</button>
 
-<form>
-  <script src="https://checkout.flutterwave.com/v3.js"></script>
-  <button type="button" onClick="makePayment()">Pay Now</button>
-</form>
+<br>
+<% if (user) { %>
+  <% if (user.id === shop.vendor_id) { %>
+  <button type="button" name="button" onclick="location.href='/vendor/<%= shop.id %>/additem'">add new item</button>
+<% } %>
+<% } %>
+

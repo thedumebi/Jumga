@@ -1,0 +1,24 @@
+<div class="container-fluid colored-section">
+  <h1 class="big-heading">Add a new item to your shop</h1>
+</div>
+
+<div class="container-fluid">
+  <form class="create-article" action="/vendor/<%= shopId %>/additem" method="POST">
+    <div class="form-group">
+      <label for="text">Item Name</label>
+      <input type="text" class="form-control" name="name" placeholder="item name">
+    </div>
+    <div class="form-group">
+      <label for="number">Item price</label>
+      <input type="number" class="form-control" name="price" placeholder="unit price">
+    </div>
+    <div class="form-group">
+      <label for="number">Item quantity</label>
+      <input type="number" class="form-control" name="quantity" placeholder="quantity">
+    </div>
+    <div class="form-group">
+      <input type="hidden" class="form-control" name="shop_id" value=<%= shopId %>>
+    </div>
+    <button type="submit" class="btn btn-dark">Add item</button>
+  </form>
+</div>

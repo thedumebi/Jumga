@@ -1,17 +1,11 @@
-<div class="container-fluid colored-section">
-  <h1 class="big-heading">Add a new item to your shop</h1>
-</div>
+<h1><%= item.name %> </h1>
+<p><%= item.price %> </p>
+<p>There are <%= item.quantity %> left in stock</p>
 
-<div class="container-fluid">
-  <form class="create-article" action="/account/<%= shopId %>/additem" method="POST">
-    <div class="form-group">
-      <label for="text">Item Name</label>
-      <input type="text" class="form-control" name="name">
-    </div>
-    <div class="form-group">
-      <label for="number">Item price</label>
-      <input type="number" class="form-control" name="price">
-    </div>
-    <button type="submit" class="btn btn-dark">Add item</button>
-  </form>
-</div>
+<% if (user) { %>
+    <% if (user.role == "vendor" && user.id != item.vendor_id) { %>
+        <button type="button" name="button" onclick="location.href='/items/<%= item.id%>/buy'">Buy item</button>
+    <% } %>
+<% } else { %>
+    <button type="button" name="button" onclick="location.href='/items/<%= item.id%>/buy'">Buy item</button>
+<% } %>

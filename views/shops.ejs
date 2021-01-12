@@ -1,0 +1,13 @@
+<% shops.map((shop) => { %>
+    <h1><%= shop.name %></h1>
+    <p><%= shop.country %></p>
+    <% if (shop.items) { %>
+        <% shop.items.slice(0, 5).map((item) => { %>
+            <ul>
+                <li><%= item.name %></li>
+                <li><%= item.price %></li>
+            </ul>
+        <% }); %>
+    <% } %>
+    <button type="button" name="button" onclick="location.href='/shops/<%= shop.id %>'">visit shop</button>
+<% }); %>
