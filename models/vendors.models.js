@@ -8,7 +8,7 @@ const dispatchModel = require("./dispatch.model");
 const vendorSchema = new mongoose.Schema({
   id: {
     type: Number,
-    required: false,
+    required: true,
     unique: true,
   },
   username: String,
@@ -48,15 +48,11 @@ passport.serializeUser(function (user, done) {
     type: user.role
   };
   done(null, key);
-  console.log(key);
 });
 passport.deserializeUser(function (key, done) {
-  console.log("des-key", key);
   const model = key.type === "vendor" ? vendorModel : key.type === "client" ? clientModel : dispatchModel;
-  console.log("model", model);
   model.findById(key.id, function (err, user) {
     done(err, user);
-    console.log("deserialize", user);
   });
 });
 

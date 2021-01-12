@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const clientSchema = new mongoose.Schema({
   id: {
     type: Number,
-    required: false,
+    required: true,
     unique: true,
   },
   username: {

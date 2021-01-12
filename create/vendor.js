@@ -19,7 +19,7 @@ exports.createVendor = async function (req, res) {
       newVendor.save(function(err) {
         if (!err) {
           passport.authenticate("vendorLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
-            res.redirect("/account");
+            res.redirect("/vendor");
           });
         }
       });
