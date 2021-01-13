@@ -6,10 +6,12 @@ const purchaseSchema = new mongoose.Schema ({
         required: true,
         unique: true
     },
+    tx_ref: String,
     amount: Number,
+    item_id: Number,
     vendor_id: Number,
     vendor_amount: Number,
-    commission: Number,
+    jumga_commission: Number,
     delivery_amount: Number,
     delivery_commission: Number,
     dispatch_amount: Number,

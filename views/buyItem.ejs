@@ -1,0 +1,26 @@
+<p>There are <%= item.quantity %> left in stock</p>
+<p>Delivery fee is NGN1500</p>
+
+<div class="container-fluid">
+    <form class="create-article" action="/items/<%= item.id%>/buy" method="POST">
+      <div class="form-group">
+        <label for="text">Item Name</label>
+        <input type="text" class="form-control" name="name" value=<%= item.name %> readonly>
+      </div>
+      <div class="form-group">
+        <label for="number">Item price</label>
+        <input type="number" class="form-control" name="price" value=<%= item.price %> readonly>
+      </div>
+      <div class="form-group">
+        <label for="number">Item quantity</label>
+        <input type="number" class="form-control" name="quantity" placeholder="quantity">
+      </div>
+      <div class="form-group">
+        <input type="hidden" class="form-control" name="available_quantity" value=<%= item.quantity %>>
+        <input type="hidden" class="form-control" name="vendor_id" value=<%= item.vendor_id %>>
+        <input type="hidden" class="form-control" name="item_id" value=<%= item.id %>>
+        <input type="hidden" class="form-control" name="delivery" value="1500">
+      </div>
+      <button type="submit" class="btn btn-dark">Buy</button>
+    </form>
+  </div>

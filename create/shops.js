@@ -16,7 +16,7 @@ exports.createShop = async function(req, res) {
             created_at: Date.now()
         });
         await newShop.save();
-        await vendorModel.updateOne({id: req.user.id}, {$push: {shops: {..._.pick(newShop, ["id", "name", "items"])}}});
+        await vendorModel.updateOne({id: req.user.id}, {$push: {shops: {..._.pick(newShop, ["id", "name", "country"])}}});
         res.redirect("/vendor");
     } catch (error) {
         console.log(error);

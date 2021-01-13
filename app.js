@@ -2,12 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
-const ejs = require("ejs");
 const cors = require("cors");
-const mongoose = require("mongoose");
 const session = require("express-session");
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
 const crypto = require("crypto");
 const { connectDB } = require("./database.utils");
 const { createVendor } = require("./create/vendor");
@@ -18,11 +15,11 @@ const { loginClient } = require("./login/clients.login");
 const { loginDispatch } = require("./login/dispatch.login");
 const { ensureOnlyVendor } = require("./models/control");
 const vendorModel = require("./models/vendors.models");
-const { createShop } = require("./create/shops");
 const { makeShopPayment } = require("./create/shopPayment");
 const shopModel = require("./models/shops.model");
 const { createItem } = require("./create/items");
 const itemModel = require("./models/items.model");
+const { createPurchase } = require("./create/purchases");
 
 const app = express();
 
@@ -146,9 +143,31 @@ app.get("/items/:itemId", function(req, res) {
   });
 });
 
-app.get("/items/:itemId/buy", function(req, res) {
+app.route("/items/:itemId/buy")
+.get(function(req, res) {
+  const itemId = req.params.itemId
   if (req.isAuthenticated()) {
-    res.send("buy");
+    itemModel.findOne({id: itemId}, function(err, foundItem) {
+      if (!err) {
+        if (req.user.role == "vendor" && req.user.id == foundItem.vendor_id) {
+          res.redirect("/shops");
+        } else {
+          res.render("buyItem", {item: foundItem, user: req.user});
+        }
+      }
+    });
+  } else {
+    res.redirect("/login");
+  }
+})
+.post(function(req, res) {
+  const itemId = req.params.itemId
+  if (req.isAuthenticated()) {
+    if (req.body.quantity> req.body.available_quantity) {
+      res.redirect(`/items/${itemId}/buy`)
+    } else {
+      createPurchase(req, res);
+    }
   } else {
     res.redirect("/login");
   }
