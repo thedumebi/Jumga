@@ -17,6 +17,7 @@ const vendorSchema = new mongoose.Schema({
   phone_number: String,
   shops: Array,
   role: String,
+  country: String,
   created_at: {
     type: Date,
     default: Date.now(),

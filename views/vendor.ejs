@@ -1,3 +1,5 @@
+<%- include("partials/header") -%>
+
 <h1>Welcome <%= vendor.name %></h1>
 <button class="btn btn-dark" type="button" onclick="location.href='/createshop'">Create a shop</button>
 
@@ -7,3 +9,5 @@
   <p><%= shop.name %></p>
   <button type="button" name="button" onclick="location.href='/shops/<%= shop.id %>'">visit shop</button>
 <% }); %>
+
+<%- include("partials/footer") -%>

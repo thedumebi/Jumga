@@ -1,3 +1,5 @@
+<%- include("partials/header") -%>
+
 <div class="container-fluid colored-section">
   <h1 class="big-heading">Create a new shop</h1>
 </div>
@@ -14,12 +16,12 @@
       <input type="email" class="form-control" name="email">
     </div>
     <div class="form-group">
-      <label for="password">Country</label>
+      <label>Pick country</label>
       <select class="" name="country">
-        <option value="Nigeria">Nigeria</option>
-        <option value="Ghana">Ghana</option>
-        <option value="Kenya">Kenya</option>
-        <option value="UK">UK</option>
+        <option value="NGN">Nigeria</option>
+        <option value="GHS">Ghana</option>
+        <option value="KES">Kenya</option>
+        <option value="USD">UK</option>
       </select>
     </div>
     <div class="form-group">
@@ -33,3 +35,5 @@
     <button type="submit" class="btn btn-dark">Create Store</button>
   </form>
 </div>
+
+<%- include("partials/footer") -%>

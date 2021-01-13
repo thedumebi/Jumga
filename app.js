@@ -115,7 +115,11 @@ app.get("/shops/:shopId", function (req, res) {
 app.route("/vendor/:shopId/additem")
   .get(ensureOnlyVendor, function (req, res) {
     const shopId = req.params.shopId;
-    res.render("addItem", { shopId: shopId });
+    shopModel.findOne({id: shopId}, function(err, foundShop) {
+      if (!err) {
+        res.render("addItem", { shop: foundShop });
+      }
+    });
   })
   .post(ensureOnlyVendor, function (req, res) {
     createItem(req, res);

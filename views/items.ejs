@@ -1,5 +1,9 @@
+<%- include("partials/header") -%>
+
 <% items.map((item) => { %>
     <h1><%= item.name %> </h1>
-    <p><%= item.price %> </p>
+    <p><%= item.currency %><%= item.price %> </p>
     <button type="button" name="button" onclick="location.href='/items/<%= item.id%>'">view item</button>
 <% }); %> 
+
+<%- include("partials/footer") -%>

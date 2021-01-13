@@ -14,6 +14,7 @@ exports.createVendor = async function (req, res) {
         name: req.body.name,
         phone_number: req.body.phone,
         role: req.body.role,
+        country: req.body.country,
         created_at: Date.now()
       });
       newVendor.save(function(err) {

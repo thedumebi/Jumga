@@ -1,3 +1,5 @@
+<%- include("partials/header") -%>
+
 <div class="container-fluid colored-section">
   <h1 class="big-heading">Add a new item to your shop</h1>
 </div>
@@ -17,8 +19,11 @@
       <input type="number" class="form-control" name="quantity" placeholder="quantity">
     </div>
     <div class="form-group">
-      <input type="hidden" class="form-control" name="shop_id" value=<%= shopId %>>
+      <input type="hidden" class="form-control" name="shop_id" value=<%= shop.id %>>
+      <input type="hidden" class="form-control" name="currency" value=<%= shop.country %>>
     </div>
     <button type="submit" class="btn btn-dark">Add item</button>
   </form>
 </div>
+
+<%- include("partials/footer") -%>

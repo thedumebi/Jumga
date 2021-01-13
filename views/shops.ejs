@@ -1,3 +1,5 @@
+<%- include("partials/header") -%>
+
 <% shops.map((shop) => { %>
     <h1><%= shop.name %></h1>
     <p><%= shop.country %></p>
@@ -11,3 +13,5 @@
     <% } %>
     <button type="button" name="button" onclick="location.href='/shops/<%= shop.id %>'">visit shop</button>
 <% }); %>
+
+<%- include("partials/footer") -%>

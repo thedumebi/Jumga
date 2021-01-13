@@ -14,6 +14,7 @@ exports.createPurchase = async function (req, res) {
       id: purchase ? purchase.id + 1 : 1,
       tx_ref: tx_ref,
       amount: req.body.quantity * req.body.price,
+      currency: req.body.currency,
       item_id: req.body.item_id,
       vendor_id: req.body.vendor_id,
       vendor_amount: (req.body.quantity * req.body.price) * (1 - commission),

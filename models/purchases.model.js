@@ -8,6 +8,7 @@ const purchaseSchema = new mongoose.Schema ({
     },
     tx_ref: String,
     amount: Number,
+    currency: String,
     item_id: Number,
     vendor_id: Number,
     vendor_amount: Number,
