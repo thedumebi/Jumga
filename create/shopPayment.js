@@ -67,13 +67,13 @@ async function validateTransaction(body, req, res) {
         }
     }).then(res => {
         console.log("validated");
-        verifyTransaction(res.data.data.id);
+        verifyTransaction(res.data.data.id, req, (req) => console.log("verify callback"));
     }).then(() => {
         createShop(req, res);
     }).catch(e => console.log(e));
 }
 
-async function verifyTransaction(id) {
+async function verifyTransaction(id, req, callback) {
     var options = {
         method: 'GET',
         url: `https://api.flutterwave.com/v3/transactions/${id}/verify`,
@@ -87,7 +87,10 @@ async function verifyTransaction(id) {
         if (error) throw new Error(error);
         if (!error && info.status == "success" && info.data.charged_amount === info.data.amount) {
             console.log("verified");
+            callback(req);
             return true;
         }
       });
 }
+
+exports.verifyTransaction = verifyTransaction;

@@ -1,0 +1,37 @@
+<%- include("partials/header") -%>
+
+<h1>Welcome <%= user.name %></h1>
+<% if (user.role == "vendor") { %>
+  <button class="btn btn-dark" type="button" onclick="location.href='/createshop'">Create a shop</button>
+  <% if (user.shops) { %>
+    <% user.shops.map((shop) => { %>
+      <p><%= shop.name %></p>
+      <button type="button" name="button" onclick="location.href='/shops/<%= shop.id %>'">visit shop</button>
+    <% }); %>
+  <% } %>
+<% } %>
+
+<% if (user.role == "dispatch") { %>
+  <p>These are the shops you are in charge of.</p>
+  <% if (user.shops) { %>
+    <% user.shops.map((shop) => { %>
+      <p><%= shop.id %></p>
+      <p><%= shop.name %></p>
+      <button type="button" name="button" onclick="location.href='/shops/<%= shop.id %>'">visit shop</button>
+    <% }); %>
+  <% } %>
+<% } %>
+
+<% if (user.role == "client") { %>
+  <p>Start browsing by <a href="/shops">shops</a> or by <a href="/items">items</a>.</p>
+<% } %>
+
+<% if (user.bought_items) { %>
+  <% user.bought_items.map((item) => { %>
+    <p><%= item.item_name %></p>
+    <p><%= item.item_quantity %></p>
+    <button type="button" name="button" onclick="location.href='/purchase/<%= item.tx_ref %>'">view purchase</button>
+  <% }); %>
+<% } %>
+
+<%- include("partials/footer") -%>

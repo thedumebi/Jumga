@@ -13,13 +13,16 @@ const { createDispatch } = require("./create/dispatch");
 const { loginVendor } = require("./login/vendors.login");
 const { loginClient } = require("./login/clients.login");
 const { loginDispatch } = require("./login/dispatch.login");
-const { ensureOnlyVendor } = require("./models/control");
+const { ensureOnlyVendor, ensureOnlyClient, ensureOnlyDispatch } = require("./models/control");
 const vendorModel = require("./models/vendors.models");
 const { makeShopPayment } = require("./create/shopPayment");
 const shopModel = require("./models/shops.model");
 const { createItem } = require("./create/items");
 const itemModel = require("./models/items.model");
-const { createPurchase } = require("./create/purchases");
+const { createPurchase, confirmPurchase } = require("./create/purchases");
+const verifyTransaction = require("./create/shopPayment");
+const clientModel = require("./models/clients.model");
+const dispatchModel = require("./models/dispatch.model");
 
 const app = express();
 
@@ -77,7 +80,31 @@ app.get("/vendor", ensureOnlyVendor, function (req, res) {
       console.log(err);
     } else {
       if (foundVendor) {
-        res.render("vendor", { vendor: foundVendor });
+        res.render("user", { user: foundVendor });
+      }
+    }
+  });
+});
+
+app.get("/client", ensureOnlyClient, function (req, res) {
+  clientModel.findById(req.user._id, function (err, foundClient) {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundClient) {
+        res.render("user", { user: foundClient });
+      }
+    }
+  });
+});
+
+app.get("/dispatch", ensureOnlyDispatch, function (req, res) {
+  dispatchModel.findById(req.user._id, function (err, foundDispatch) {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundDispatch) {
+        res.render("user", { user: foundDispatch });
       }
     }
   });
@@ -167,13 +194,20 @@ app.route("/items/:itemId/buy")
 .post(function(req, res) {
   const itemId = req.params.itemId
   if (req.isAuthenticated()) {
-    if (req.body.quantity> req.body.available_quantity) {
-      res.redirect(`/items/${itemId}/buy`)
-    } else {
-      createPurchase(req, res);
-    }
+    createPurchase(req, res);
   } else {
     res.redirect("/login");
+  }
+});
+
+app.get("/success", function(req, res) {
+  if (req.isAuthenticated()) {
+    if (req.query.status == "successful") {
+      verifyTransaction.verifyTransaction(req.query.transaction_id, req, confirmPurchase);
+      res.render("success");
+    } 
+  } else {
+    res.redirect("/");
   }
 });
 

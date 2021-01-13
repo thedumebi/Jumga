@@ -1,5 +1,9 @@
 <%- include("partials/header") -%>
 
+<% if (items.length == 0) { %>
+    <p>Items are coming soon</p>
+<% } %>
+
 <% items.map((item) => { %>
     <h1><%= item.name %> </h1>
     <p><%= item.currency %><%= item.price %> </p>

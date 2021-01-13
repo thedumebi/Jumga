@@ -1,5 +1,9 @@
 <%- include("partials/header") -%>
 
+<% if (shops.length == 0) { %>
+    <p>Shops are coming soon</p>
+<% } %>
+
 <% shops.map((shop) => { %>
     <h1><%= shop.name %></h1>
     <p><%= shop.country %></p>

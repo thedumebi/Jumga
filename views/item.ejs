@@ -1,11 +1,13 @@
 <%- include("partials/header") -%>
 
 <h1><%= item.name %> </h1>
-<p><%= item.currency %><%= item.price %> </p>
+<p><%= item.currency %> <%= item.price %> </p>
 <p>There are <%= item.quantity %> left in stock</p>
 
 <% if (user) { %>
     <% if (user.role == "vendor" && user.id != item.vendor_id) { %>
+        <button type="button" name="button" onclick="location.href='/items/<%= item.id%>/buy'">Buy item</button>
+    <% } else { %>
         <button type="button" name="button" onclick="location.href='/items/<%= item.id%>/buy'">Buy item</button>
     <% } %>
 <% } else { %>

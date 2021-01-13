@@ -18,6 +18,7 @@ const vendorSchema = new mongoose.Schema({
   shops: Array,
   role: String,
   country: String,
+  bought_items: Array,
   created_at: {
     type: Date,
     default: Date.now(),

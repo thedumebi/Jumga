@@ -19,7 +19,7 @@ exports.createDispatch = async function (req, res) {
       newDispatch.save(function(err) {
         if (!err) {
           passport.authenticate("dispatchLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
-            res.redirect("/account");
+            res.redirect("/dispatch");
           });
         }
       });

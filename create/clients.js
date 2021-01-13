@@ -19,7 +19,7 @@ exports.createClient = async function(req, res) {
       newClient.save(function(err) {
         if (!err) {
           passport.authenticate("clientLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
-            res.redirect("/account");
+            res.redirect("/client");
           });
         }
       });

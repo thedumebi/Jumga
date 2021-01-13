@@ -16,6 +16,7 @@ const dispatchSchema = new mongoose.Schema({
   revenue: Number,
   shops: Array,
   role: String,
+  bought_items: Array,
   created_at: {
     type: Date,
     default: Date.now(),

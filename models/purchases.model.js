@@ -10,12 +10,17 @@ const purchaseSchema = new mongoose.Schema ({
     amount: Number,
     currency: String,
     item_id: Number,
+    item_quantity: Number,
+    item_name: String,
+    shop_id: Number,
     vendor_id: Number,
     vendor_amount: Number,
+    purchase_role: String,
     jumga_commission: Number,
     delivery_amount: Number,
     delivery_commission: Number,
     dispatch_amount: Number,
+    status: String,
     created_at: {
         type: Date,
         default: Date.now()
