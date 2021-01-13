@@ -23,6 +23,7 @@ const { createPurchase, confirmPurchase } = require("./create/purchases");
 const verifyTransaction = require("./create/shopPayment");
 const clientModel = require("./models/clients.model");
 const dispatchModel = require("./models/dispatch.model");
+const purchaseModel = require("./models/purchases.model");
 
 const app = express();
 
@@ -208,6 +209,21 @@ app.get("/success", function(req, res) {
     } 
   } else {
     res.redirect("/");
+  }
+});
+
+app.get("/purchase/:purchaseId", function(req, res) {
+  const purchaseId = req.params.purchaseId
+  if (req.isAuthenticated()) {
+    purchaseModel.findOne({tx_ref: purchaseId}, function(err, foundPurchase) {
+      if (req.user.role == foundPurchase.purchase_role && req.user.id == foundPurchase.user_id) {
+        res.render("purchase", {purchase: foundPurchase});
+      } else {
+        res.redirect("/login");
+      }
+    });
+  } else {
+    res.redirect("/login");
   }
 });
 

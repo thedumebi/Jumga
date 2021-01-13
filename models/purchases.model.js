@@ -14,6 +14,7 @@ const purchaseSchema = new mongoose.Schema ({
     item_name: String,
     shop_id: Number,
     vendor_id: Number,
+    user_id: Number,
     vendor_amount: Number,
     purchase_role: String,
     jumga_commission: Number,

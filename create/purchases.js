@@ -25,6 +25,7 @@ exports.createPurchase = async function (req, res) {
       purchase_role: req.user.role,
       shop_id: req.body.shop_id,
       vendor_id: req.body.vendor_id,
+      user_id: req.user.id,
       vendor_amount: (req.body.quantity * req.body.price) * (1 - commission),
       jumga_commission: (req.body.quantity * req.body.price) * commission,
       delivery_amount: Number(req.body.delivery),
@@ -83,6 +84,7 @@ exports.confirmPurchase = async function(req) {
     const [purchase] = await purchaseModel.find({tx_ref: req.query.tx_ref}).exec();
     await itemModel.updateOne({id: purchase.item_id}, {$inc: {quantity: -purchase.item_quantity}});
     await shopModel.updateOne({id: purchase.shop_id, items: {$elemMatch: {id: purchase.item_id}}}, {$inc: {"items.$.quantity": -purchase.item_quantity}});
+    await shopModel.updateOne({id: purchase.shop_id}, {$inc: {revenue: purchase.vendor_amount}});
     const model = purchase.purchase_role == "vendor"? vendorModel : purchase.purchase_role == "client" ? clientModel : dispatchModel
     await model.updateOne({id: req.user.id}, {$push: {bought_items: {..._.pick(purchase, ["item_id","item_name", "item_quantity", "shop_id", "tx_ref"])}}});
     const [shop] = await shopModel.find({id: purchase.shop_id}).exec();
