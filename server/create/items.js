@@ -17,7 +17,7 @@ exports.createItem = async function(req, res) {
             created_at: Date.now()
         });
         await newItem.save();
-        await shopModel.updateOne({id: newItem.shop_id}, {$push: {items: {..._.pick(newItem, ["id", "name", "price", "quantity"])}}});
+        await shopModel.updateOne({id: newItem.shop_id}, {$push: {items: {..._.pick(newItem, ["id", "name", "price", "quantity", "currency"])}}});
         // await vendorModel.updateOne({id: newItem.vendor_id, shops: {$elemMatch: {id: newItem.shop_id}}}, {$push: {"shops.$.items": {..._.pick(newItem, ["id", "name", "price", "quantity"])}}});
         res.redirect(`/shops/${req.body.shop_id}`);
     } catch (error) {

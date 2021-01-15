@@ -1,7 +1,9 @@
 const passport = require("passport");
 const vendorModel = require("../models/vendors.models");
+const _ = require("lodash");
 
 exports.loginVendor = async function (req, res) {
+  console.log(req.user);
   try {
     const newVendor = new vendorModel({
       username: req.body.username,
@@ -13,7 +15,7 @@ exports.loginVendor = async function (req, res) {
       } else {
         passport.authenticate("vendorLocal", { failureRedirect: "/login", failureMessage: true })(req, res,
           function () {
-            res.redirect("/vendor");
+            res.send({status: "success", user: req.user});
           }
         );
       }

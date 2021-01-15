@@ -29,6 +29,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public"));
 app.use(
   session({
@@ -39,7 +40,11 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
+  credentials: true
+}));
 
 connectDB();
 
@@ -124,16 +129,17 @@ app.get("/shops", function(req, res) {
     if (err) {
       console.log(err);
     } else {
-      res.render("shops", {shops: shops});
+      res.status(200).json({shops: shops});
     }
   });
 });
 
 app.get("/shops/:shopId", function (req, res) {
   const shopId = req.params.shopId;
-  shopModel.findOne({id: shopId}, function(err, foundShop) {
+  shopModel.find({id: shopId}, function(err, foundShop) {
     if (!err) {
-      res.render("shop", {shop: foundShop, user: req.user});
+      // res.render("shop", {shop: foundShop, user: req.user});
+      res.status(200).json({shop: foundShop});
     } else {
       res.send("shop does not exist");
     }
@@ -157,9 +163,9 @@ app.get("/items", function(req, res) {
   itemModel.find(function(err, foundItems) {
     if (!err) {
       if (foundItems) {
-        res.render("items", {items: foundItems})
+        // res.render("items", {items: foundItems})
+        res.status(200).json({items: foundItems});
       } else {
-        alert("No items yet");
         res.redirect("/");
       }
     }
@@ -170,7 +176,8 @@ app.get("/items/:itemId", function(req, res) {
   const itemId = req.params.itemId;
   itemModel.findOne({id: itemId}, function(err, foundItem) {
     if (!err) {
-      res.render("item", {item: foundItem, user: req.user});
+      // res.render("item", {item: foundItem, user: req.user});
+      res.status(200).json({item: foundItem});
     }
   });
 });
@@ -217,13 +224,27 @@ app.get("/purchase/:purchaseId", function(req, res) {
   if (req.isAuthenticated()) {
     purchaseModel.findOne({tx_ref: purchaseId}, function(err, foundPurchase) {
       if (req.user.role == foundPurchase.purchase_role && req.user.id == foundPurchase.user_id) {
-        res.render("purchase", {purchase: foundPurchase});
+        // res.render("purchase", {purchase: foundPurchase});
+        res.status(200).json({purchase: foundPurchase});
       } else {
-        res.redirect("/login");
+        // res.redirect("/login");
+        res.status(200).json({status: "fail"})
       }
     });
   } else {
-    res.redirect("/login");
+    console.log(res.statusCode);
+    res.status(200).json({status: "fail"})
+    // res.redirect("/login");
+  }
+});
+
+app.get("/checkAuthentication", function(req, res) {
+  const authenticated= Boolean(req.user !== "undefined");
+  if (req.isAuthenticated()) {
+    const user = req.user
+    res.status(200).json({user: user, authenticated});
+  } else {
+    res.send({});
   }
 });
 
@@ -234,7 +255,7 @@ app.get("/logout", function (req, res) {
 
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 3000;
+  port = 9000;
 }
 
 app.listen(port, function () {

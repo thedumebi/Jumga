@@ -13,7 +13,8 @@ exports.loginClient = async function (req, res) {
       } else {
         passport.authenticate("clientLocal", { failureRedirect: "/login", failureMessage: true })(req, res,
           function () {
-            res.redirect("/client");
+            // res.redirect("/client");
+            res.send({status: "success", user: req.user});
           }
         );
       }
