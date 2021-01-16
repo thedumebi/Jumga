@@ -11,7 +11,7 @@ exports.createVendor = async function (req, res) {
         id : vendor ? vendor.id + 1 : 1,
         username: req.body.username,
         password: hash,
-        name: req.body.name,
+        name: req.body.fname + " " + req.body.lname,
         phone_number: req.body.phone,
         role: req.body.role,
         country: req.body.country,
@@ -20,7 +20,8 @@ exports.createVendor = async function (req, res) {
       newVendor.save(function(err) {
         if (!err) {
           passport.authenticate("vendorLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
-            res.redirect("/vendor");
+            // res.redirect("/vendor");
+            res.send({status: "success", user: req.user});
           });
         }
       });

@@ -11,7 +11,7 @@ exports.createDispatch = async function (req, res) {
         id : dispatch ? dispatch.id + 1 : 1,
         username: req.body.username,
         password: hash,
-        name: req.body.name,
+        name: req.body.fname + " " + req.body.lname,
         phone_number: req.body.phone,
         role: req.body.role,
         created_at: Date.now()
@@ -19,7 +19,8 @@ exports.createDispatch = async function (req, res) {
       newDispatch.save(function(err) {
         if (!err) {
           passport.authenticate("dispatchLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
-            res.redirect("/dispatch");
+            // res.redirect("/dispatch");
+            res.send({status: "success", user: req.user});
           });
         }
       });

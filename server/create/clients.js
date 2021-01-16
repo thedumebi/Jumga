@@ -11,7 +11,7 @@ exports.createClient = async function(req, res) {
         id : client ? client.id + 1 : 1,
         username: req.body.username,
         password: hash,
-        name: req.body.name,
+        name: req.body.fname + " " + req.body.lname,
         phone_number: req.body.phone,
         role: req.body.role,
         created_at: Date.now()
@@ -19,7 +19,8 @@ exports.createClient = async function(req, res) {
       newClient.save(function(err) {
         if (!err) {
           passport.authenticate("clientLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
-            res.redirect("/client");
+            // res.redirect("/client");
+            res.send({status: "success", user: req.user});
           });
         }
       });

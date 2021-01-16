@@ -250,7 +250,8 @@ app.get("/checkAuthentication", function(req, res) {
 
 app.get("/logout", function (req, res) {
   req.logout();
-  res.redirect("/");
+  // res.redirect("/");
+  res.status(200).json({status: "success"});
 });
 
 let port = process.env.PORT;

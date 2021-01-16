@@ -3,7 +3,6 @@ const vendorModel = require("../models/vendors.models");
 const _ = require("lodash");
 
 exports.loginVendor = async function (req, res) {
-  console.log(req.user);
   try {
     const newVendor = new vendorModel({
       username: req.body.username,

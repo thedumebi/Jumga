@@ -8,6 +8,10 @@ const itemSchema = new mongoose.Schema ({
     },
     name: String,
     price: Number,
+    image: {
+        data: Buffer,
+        contentType: String
+    },
     currency: String,
     quantity: Number,
     vendor_id: Number,
