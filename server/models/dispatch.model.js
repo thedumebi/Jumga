@@ -21,6 +21,7 @@ const dispatchSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  modified_at: Date,
 });
 
 const dispatchModel = mongoose.model("Dispatch", dispatchSchema);

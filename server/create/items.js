@@ -1,7 +1,8 @@
 const itemModel = require("../models/items.model");
 const _ = require("lodash");
 const shopModel = require("../models/shops.model");
-const vendorModel = require("../models/vendors.models");
+const fs = require("fs");
+const path = require("path");
 
 exports.createItem = async function(req, res) {
     try {
@@ -10,6 +11,10 @@ exports.createItem = async function(req, res) {
             id : item ? item.id + 1 : 1,
             name : req.body.name,
             price: req.body.price,
+            image: {
+                data: fs.readFileSync(path.join(__dirname, "..", "/public/uploads/images/" + req.file.filename)),
+                contentType: req.file.mimetype
+            },
             currency: req.body.currency,
             quantity: req.body.quantity,
             vendor_id: req.user.id,
@@ -17,7 +22,7 @@ exports.createItem = async function(req, res) {
             created_at: Date.now()
         });
         await newItem.save();
-        await shopModel.updateOne({id: newItem.shop_id}, {$push: {items: {..._.pick(newItem, ["id", "name", "price", "quantity", "currency"])}}});
+        await shopModel.updateOne({id: newItem.shop_id}, {$push: {items: {..._.pick(newItem, ["id", "name", "price", "quantity", "currency", "image"])}}});
         // await vendorModel.updateOne({id: newItem.vendor_id, shops: {$elemMatch: {id: newItem.shop_id}}}, {$push: {"shops.$.items": {..._.pick(newItem, ["id", "name", "price", "quantity"])}}});
         // res.redirect(`/shops/${req.body.shop_id}`);
         res.status(200).json({status: "success", itemId: newItem.id});

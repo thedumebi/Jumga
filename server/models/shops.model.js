@@ -9,7 +9,7 @@ const shopSchema = new mongoose.Schema ({
   name: String,
   email: String,
   country: String,
-  dispatch_rider: String,
+  dispatch_rider: Object,
   bank: String,
   account_number: String,
   revenue: Number,

@@ -1,11 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-const request = require("request");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
-const crypto = require("crypto");
+const multer = require("multer");
 const { connectDB } = require("./database.utils");
 const { createVendor } = require("./create/vendor");
 const { createClient } = require("./create/clients");
@@ -24,6 +23,7 @@ const verifyTransaction = require("./create/shopPayment");
 const clientModel = require("./models/clients.model");
 const dispatchModel = require("./models/dispatch.model");
 const purchaseModel = require("./models/purchases.model");
+const { assignDispatch } = require("./create/assignDispatch");
 
 const app = express();
 
@@ -45,6 +45,20 @@ app.use(cors({
   methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
   credentials: true
 }));
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, __dirname + "/public/uploads/images")
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname)
+  }
+});
+const upload = multer({
+  storage: storage,
+  onFileUploadStart: function(file) {
+    console.log("upload side", file.originalname + "is starting...")
+  }
+});
 
 connectDB();
 
@@ -58,11 +72,11 @@ app.route("/register")
   })
   .post(function (req, res) {
     if (req.body.role == "vendor") {
-      createVendor(req, res);
+      createVendor(req, res).then(() => assignDispatch());
     } else if (req.body.role == "client") {
       createClient(req, res);
     } else if (req.body.role == "dispatch") {
-      createDispatch(req, res);
+      createDispatch(req, res).then(() => assignDispatch());
     }
   });
 
@@ -155,7 +169,7 @@ app.route("/vendor/:shopId/additem")
       }
     });
   })
-  .post(ensureOnlyVendor, function (req, res) {
+  .post(ensureOnlyVendor, upload.single("image"), function (req, res) {
     createItem(req, res);
   });
 

@@ -5,7 +5,7 @@
 </div>
 
 <div class="container-fluid">
-  <form class="create-article" action="/vendor/<%= shop.id %>/additem" method="POST">
+  <form class="create-article" action="/vendor/<%= shop.id %>/additem" method="POST" enctype="multipart/form-data">
     <div class="form-group">
       <label for="text">Item Name</label>
       <input type="text" class="form-control" name="name" placeholder="item name">
@@ -17,6 +17,10 @@
     <div class="form-group">
       <label for="number">Item quantity</label>
       <input type="number" class="form-control" name="quantity" placeholder="quantity">
+    </div>
+    <div class="form-group">
+      <label for="file">Item image</label>
+      <input type="file" class="form-control" name="image" placeholder="image">
     </div>
     <div class="form-group">
       <input type="hidden" class="form-control" name="shop_id" value=<%= shop.id %>>
