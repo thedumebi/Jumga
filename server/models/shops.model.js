@@ -15,6 +15,7 @@ const shopSchema = new mongoose.Schema ({
   revenue: Number,
   items: Array,
   vendor_id: Number,
+  tx_ref: Number,
   created_at: {
     type: Date,
     default: Date.now()

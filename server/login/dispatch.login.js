@@ -3,22 +3,16 @@ const dispatchModel = require("../models/dispatch.model");
 
 exports.loginDispatch = async function (req, res) {
   try {
-    const newDispatch = new dispatchModel({
-      username: req.body.username,
-      password: req.body.password,
-    });
-    req.login(newDispatch, function (err) {
-      if (err) {
-        console.log(err);
-      } else {
-        passport.authenticate("dispatchLocal", { failureRedirect: "/login", failureMessage: true })(req,res,
-          function () {
-            // res.redirect("/dispatch");
-            res.send({status: "success", user: req.user});
-          }
-        );
+    passport.authenticate("dispatchLocal", function(err, dispatch, info) {
+      if (err) {console.log(err);}
+      if (!dispatch) {
+        return res.send({status: "failed", message: info.message})
       }
-    });
+      req.login(dispatch, function(err) {
+        if (err) {console.log(err);}
+        return res.send({status: "success", user: req.user})
+      });
+    })(req, res);
   } catch (error) {
     console.log(error);
   }

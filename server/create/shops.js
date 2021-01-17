@@ -1,6 +1,7 @@
 const shopModel = require("../models/shops.model");
 const _ = require("lodash");
 const vendorModel = require("../models/vendors.models");
+const { assignDispatch } = require("./assignDispatch");
 
 exports.createShop = async function(req, res) {
     try {
@@ -15,7 +16,11 @@ exports.createShop = async function(req, res) {
             vendor_id: req.user.id,
             created_at: Date.now()
         });
-        await newShop.save();
+        await newShop.save(function(err) {
+            if (!err) {
+                assignDispatch();
+            }
+        });
         await vendorModel.updateOne({id: req.user.id}, {$push: {shops: {..._.pick(newShop, ["id", "name", "country"])}}});
         res.redirect("/vendor");
     } catch (error) {

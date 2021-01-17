@@ -5,11 +5,12 @@ import { Container, Button, Row, Col } from "react-bootstrap";
 import Bought from "./Bought";
 
 function User(props) {
+  console.log(props.user);
   return (
-    <Container fluid>
+    <Container>
       <div>
         <h1 className="center big-heading">Welcome {props.user.name}</h1>
-        {props.user.shops && (
+        {props.user.role === "vendor" && props.user.shops && (
           <Row>
             {props.user.shops.map((shop) => {
               return (
@@ -27,7 +28,7 @@ function User(props) {
         )}
         {props.user.role === "dispatch" && (
           <div>
-            <p>These are the shops you make deliveries for.</p>
+            <p>{props.user.shops.length === 0 ? "You currently don't have any shops under you ☹" : "These are the shops you make deliveries for"}</p>
             {props.user.shops &&
               props.user.shops.map((shop) => {
                 return (
@@ -53,7 +54,7 @@ function User(props) {
             </Link>
           </h3>
         )}
-        {props.user.bought_items.length !== 0 && (
+        {props.user.bought_items && props.user.bought_items.length !== 0 && (
           <Container>
             <h3 className="sub-heading">Purchase History</h3>
             <Row>
@@ -73,7 +74,7 @@ function User(props) {
           </Container>
         )}
         {props.user.role === "vendor" && (
-          <Link to="/createshop">
+          <Link to="/registershop">
             <Button className="btn-dark">Register a new shop</Button>
           </Link>
         )}

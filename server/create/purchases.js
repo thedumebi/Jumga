@@ -64,7 +64,6 @@ exports.createPurchase = async function (req, res) {
       },
     }
     request(options, function(error, response, body) {
-      console.log(response.statusCode);
       if (!error && response.statusCode === 200) {
           res.redirect(body.data.link);
       }

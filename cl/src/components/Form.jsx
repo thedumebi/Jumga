@@ -33,14 +33,16 @@ function Login(props) {
   function submitRegister() {
     const url = "http://localhost:9000/register";
     axios.post(url, register, { withCredentials: true }).then((res) => {
-      history.push(
-        res.data.user.role === "vendor"
-          ? "/vendor"
-          : res.data.user.role === "client"
-          ? "/client"
-          : "/dispatch"
-      );
-      props.logged(true);
+      if (res.data.status === "success") {
+        history.push(
+          res.data.user.role === "vendor"
+            ? "/vendor"
+            : res.data.user.role === "client"
+            ? "/client"
+            : "/dispatch"
+        );
+        props.logged(true);
+      }
     });
   }
 
@@ -56,14 +58,22 @@ function Login(props) {
     axios
       .post(url, login, { withCredentials: true })
       .then((res) => {
-        history.push(
-          res.data.user.role === "vendor"
-            ? "/vendor"
-            : res.data.user.role === "client"
-            ? "/client"
-            : "/dispatch"
-        );
-        props.logged(true);
+        if (res.data.status === "success") {
+          console.log(res.data);
+          props.user(res.data.user)
+          history.push(
+            res.data.user.role === "vendor"
+              ? "/vendor"
+              : res.data.user.role === "client"
+              ? "/client"
+              : "/dispatch"
+          );
+          props.logged(true);
+        } else {
+          history.push("/login");
+          alert(res.data.message)
+        }
+        
       })
       .catch((err) => console.log(err));
     // fetch(url, {

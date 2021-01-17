@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
 import Login from "./Form";
 import Home from "./Layout/Home";
 import Menu from "./Layout/Navbar";
-import axios from "axios";
 import Shops from "./Shops";
 import Items from "./Items";
 import SItem from "./SItem";
@@ -12,27 +16,18 @@ import User from "./User";
 import Purchase from "./Purchase";
 import Logout from "./Logout";
 import AddItem from "./AddItem";
+import RegisterShop from "./RegisterShop";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState({});
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:9000/checkAuthentication", {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setLoggedIn(res.data.authenticated);
-        setUser(res.data.user);
-      })
-      .catch((error) => {
-        setLoggedIn(false);
-      });
-  }, []);
+  const [user, setUser] = useState(null);
 
   function logged(value) {
-      setLoggedIn(value);
+    setLoggedIn(value);
+  }
+
+  function getUser(value) {
+    setUser(value);
   }
 
   return (
@@ -44,10 +39,10 @@ function App() {
             <Home loggedIn={loggedIn} />
           </Route>
           <Route exact path="/register">
-            <Login isRegistered={false} logged={logged} />
+            <Login isRegistered={false} logged={logged} user={getUser} />
           </Route>
           <Route exact path="/login">
-            <Login isRegistered={true} logged={logged} />
+            <Login isRegistered={true} logged={logged} user={getUser} />
           </Route>
           <Route exact path="/shops">
             <Shops />
@@ -65,27 +60,28 @@ function App() {
             <Purchase />
           </Route>
           <Route exact path="/logout">
-            <Logout />
+            <Logout user={getUser} />
           </Route>
-          {user ?
-            (user.role === "vendor" ? (
-              <div>
-                <Route exact path="/vendor">
-                  <User user={user} />
-                </Route>
-                <Route exact path="/vendor/:shopId/additem">
-                  <AddItem />
-                </Route>
-              </div>
-            ) : user.role === "client" ? (
-              <Route exact path="/client">
-                <User user={user} />
-              </Route>
-            ) : (
-              <Route exact path="/dispatch">
-                <User user={user} />
-              </Route>
-            )): <Redirect to="/" />}
+          <Route exact path="/registershop">
+            <RegisterShop />
+          </Route>
+          <Route
+            exact
+            path={user &&
+              user.role === "vendor"
+                ? "/vendor"
+                : user && user.role === "client"
+                ? "/client"
+                : user && user.role === "dispatch"
+                ? "/dispatch"
+                : null
+            }
+          >
+            <User user={user} />
+          </Route>
+          <Route exact path={user && user.role === "vendor" && "/vendor/:shopId/additem"}>
+            <AddItem />
+          </Route>
         </Switch>
       </div>
     </Router>

@@ -19,12 +19,11 @@ async function getAvailableDispatch() {
   exports.assignDispatch = async () => {
     const shops = await shopModel.find().sort({created_at: -1}).exec();
     for (const shop in shops) {
-      console.log(shops[shop]);
       var availableDispatch = await getAvailableDispatch()
       if (shops[shop].dispatch_rider == null) {
         await shopModel.updateOne({id: shops[shop].id}, {$set: {dispatch_rider: {..._.pick(availableDispatch, ["id", "name", "phone_number", "username"])}}})
+        await dispatchModel.updateOne({id: availableDispatch.id}, {$push : {shops: {..._.pick(shops[shop], ["id", "name", "email", "country"])}}})
+        await dispatchModel.updateOne({id: availableDispatch.id}, {$set: {modified_at: Date.now()}})
       }
-      await dispatchModel.updateOne({id: availableDispatch.id}, {$push : {shops: {..._.pick(shops[shop], ["id", "name", "email", "country"])}}})
-      await dispatchModel.updateOne({id: availableDispatch.id}, {$set: {modified_at: Date.now()}})
     }
   }

@@ -1,6 +1,7 @@
 const passport = require("passport");
 const dispatchModel = require("../models/dispatch.model");
 const bcrypt = require("bcrypt");
+const { assignDispatch } = require("./assignDispatch");
 const saltRounds = 10;
 
 exports.createDispatch = async function (req, res) {
@@ -18,6 +19,7 @@ exports.createDispatch = async function (req, res) {
       });
       newDispatch.save(function(err) {
         if (!err) {
+          assignDispatch();
           passport.authenticate("dispatchLocal", {failureRedirect: "/register", failureMessage: true})(req, res, function() {
             // res.redirect("/dispatch");
             res.send({status: "success", user: req.user});

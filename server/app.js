@@ -23,7 +23,6 @@ const verifyTransaction = require("./create/shopPayment");
 const clientModel = require("./models/clients.model");
 const dispatchModel = require("./models/dispatch.model");
 const purchaseModel = require("./models/purchases.model");
-const { assignDispatch } = require("./create/assignDispatch");
 
 const app = express();
 
@@ -72,11 +71,11 @@ app.route("/register")
   })
   .post(function (req, res) {
     if (req.body.role == "vendor") {
-      createVendor(req, res).then(() => assignDispatch());
+      createVendor(req, res);
     } else if (req.body.role == "client") {
       createClient(req, res);
     } else if (req.body.role == "dispatch") {
-      createDispatch(req, res).then(() => assignDispatch());
+      createDispatch(req, res);
     }
   });
 
