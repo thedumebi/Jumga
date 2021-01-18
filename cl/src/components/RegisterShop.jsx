@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Form, Container, Button, Col } from "react-bootstrap";
+import { Redirect, useHistory } from "react-router-dom";
+import axios from "axios";
 
-function RegisterShop() {
-  alert("Your shop would not be registered until payment ($20) is confirmed!");
+function RegisterShop(props) {
+  const history = useHistory();
+  // alert("Your shop would not be registered until payment ($20) is confirmed!");
   const [shop, setShop] = useState({
     name: "",
     email: "",
     country: "",
     bank: "",
-    account_number: "",
+    account_number: ""
   });
 
   function handleChange(event) {
@@ -18,7 +21,22 @@ function RegisterShop() {
     });
   }
 
-  function addShop() {}
+  function addShop() {
+    const url = "http://localhost:9000/createshop";
+    axios.post(url, shop, { withCredentials: true }).then((res) => {
+      console.log(res);
+      if (res.data.status === "initialized") {
+        window.location.replace(res.data.link);
+      } else {
+        history.push("/registershop");
+        alert("Something went wrong, please try again later!");
+      }
+    });
+  }
+
+  if (props.user.role !== "vendor") {
+    return <Redirect to="/" />;
+  }
 
   return (
     <Container>

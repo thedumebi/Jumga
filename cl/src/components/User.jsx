@@ -1,11 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect, useRouteMatch } from "react-router-dom";
 import Shop from "./Shop";
 import { Container, Button, Row, Col } from "react-bootstrap";
 import Bought from "./Bought";
 
 function User(props) {
-  console.log(props.user);
+  const {path} = useRouteMatch();
+  const userType = path.slice(1,path.length)
+  if (props.user.role !== userType) {
+    return <Redirect to="/" />
+  }
   return (
     <Container>
       <div>

@@ -1,10 +1,6 @@
-import React, { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import axios from "axios";
 import Login from "./Form";
 import Home from "./Layout/Home";
 import Menu from "./Layout/Navbar";
@@ -17,10 +13,28 @@ import Purchase from "./Purchase";
 import Logout from "./Logout";
 import AddItem from "./AddItem";
 import RegisterShop from "./RegisterShop";
+import BuyItem from "./BuyItem";
+import ErrorPage from "./ErrorPage";
+import Success from "./Success";
+import ShopPayment from "./ShopPayment";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:9000/checkAuthentication", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setLoggedIn(res.data.authenticated);
+        setUser(res.data.user);
+      })
+      .catch((error) => {
+        setLoggedIn(false);
+      });
+  }, []);
 
   function logged(value) {
     setLoggedIn(value);
@@ -45,13 +59,13 @@ function App() {
             <Login isRegistered={true} logged={logged} user={getUser} />
           </Route>
           <Route exact path="/shops">
-            <Shops />
+            <Shops user={user} />
           </Route>
           <Route exact path="/items">
-            <Items />
+            <Items user={user} />
           </Route>
           <Route exact path="/items/:itemId">
-            <SItem />
+            <SItem user={user} />
           </Route>
           <Route exact path="/shops/:shopId">
             <SShop user={user} />
@@ -62,25 +76,36 @@ function App() {
           <Route exact path="/logout">
             <Logout user={getUser} />
           </Route>
-          <Route exact path="/registershop">
-            <RegisterShop />
+          <Route exact path="/success">
+            <Success />
           </Route>
-          <Route
-            exact
-            path={user &&
-              user.role === "vendor"
-                ? "/vendor"
-                : user && user.role === "client"
-                ? "/client"
-                : user && user.role === "dispatch"
-                ? "/dispatch"
-                : null
-            }
-          >
-            <User user={user} />
+          <Route exact path="/shoppayment">
+            <ShopPayment />
           </Route>
-          <Route exact path={user && user.role === "vendor" && "/vendor/:shopId/additem"}>
-            <AddItem />
+          <Route exact path="/items/:itemId/buy">
+            <BuyItem user={user} />
+          </Route>
+          {user && (
+            <div>
+              <Route exact path="/vendor">
+                <User user={user} />
+              </Route>
+              <Route exact path="/vendor/:shopId/additem">
+                <AddItem />
+              </Route>
+              <Route exact path="/client">
+                <User user={user} />
+              </Route>
+              <Route exact path="/dispatch">
+                <User user={user} />
+              </Route>
+              <Route exact path="/registershop">
+                <RegisterShop user={user} />
+              </Route>
+            </div>
+          )}
+          <Route path="/:name">
+            <ErrorPage />
           </Route>
         </Switch>
       </div>

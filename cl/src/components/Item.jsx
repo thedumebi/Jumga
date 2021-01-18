@@ -24,12 +24,12 @@ function Item(props) {
     <Container>
       <div className="shop">
         {props.image && (
-          <div className="heading" style={props.single && { width: "50%" }}> 
+          <div className="heading" style={props.single && { width: "50%" }}>
             <img src={imageSrc} alt="item" />
           </div>
         )}
         {props.shopImage && (
-          <div className="heading" style={props.single && { width: "50%" }}> 
+          <div className="heading" style={props.single && { width: "50%" }}>
             <img src={imageSrc} alt="item" />
           </div>
         )}
@@ -44,6 +44,30 @@ function Item(props) {
           <Link to={`/items/${props.id}`}>
             <Button className="btn-dark" type="button">
               View Item
+            </Button>
+          </Link>
+        )}
+        {props.user &&
+          props.vendor_id &&
+          props.user.role === "vendor" &&
+          props.user.id !== props.vendor_id && (
+            <Link to={`/items/${props.id}/buy`}>
+              <Button className="btn-dark" type="button">
+                Buy Item
+              </Button>
+            </Link>
+          )}
+        {props.user && props.user.role !== "vendor" && (
+          <Link to={`/items/${props.id}/buy`}>
+            <Button className="btn-dark" type="button">
+              Buy Item
+            </Button>
+          </Link>
+        )}
+        {!props.user && (
+          <Link to={`/items/${props.id}/buy`}>
+            <Button className="btn-dark" type="button">
+              Buy Item
             </Button>
           </Link>
         )}

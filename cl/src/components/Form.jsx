@@ -59,7 +59,6 @@ function Login(props) {
       .post(url, login, { withCredentials: true })
       .then((res) => {
         if (res.data.status === "success") {
-          console.log(res.data);
           props.user(res.data.user)
           history.push(
             res.data.user.role === "vendor"

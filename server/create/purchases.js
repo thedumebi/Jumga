@@ -26,8 +26,9 @@ exports.createPurchase = async function (req, res) {
       shop_id: req.body.shop_id,
       vendor_id: req.body.vendor_id,
       user_id: req.user.id,
-      vendor_amount: (req.body.quantity * req.body.price) * (1 - commission),
-      jumga_commission: (req.body.quantity * req.body.price) * commission,
+      user_role: req.user.role,
+      vendor_amount: req.body.quantity * req.body.price * (1 - commission),
+      jumga_commission: req.body.quantity * req.body.price * commission,
       delivery_amount: Number(req.body.delivery),
       delivery_commission: Number(req.body.delivery) * delivery_commission,
       dispatch_amount: Number(req.body.delivery) * (1 - delivery_commission),
@@ -45,50 +46,84 @@ exports.createPurchase = async function (req, res) {
         redirect_url: "http://localhost:3000/success",
         payment_options: "card",
         meta: {
-           consumer_id: req.user.id,
+          consumer_id: req.user.id,
         },
-        customer:{
-           email: req.user.username,
-           phonenumber: req.user.phone_number,
-           name: req.user.name
+        customer: {
+          email: req.user.username,
+          phonenumber: req.user.phone_number,
+          name: req.user.name,
         },
         customizations: {
-           title: "Jumga E-commerce site",
-           description: "Confirm payment to get your item",
-        }
+          title: "Jumga E-commerce site",
+          description: "One stop for all your needs",
+        },
       },
       json: true,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": process.env.SECRET_KEY
+        Authorization: process.env.SECRET_KEY,
       },
-    }
-    request(options, function(error, response, body) {
+    };
+    request(options, function (error, response, body) {
       if (!error && response.statusCode === 200) {
-          res.redirect(body.data.link);
+        // res.redirect(body.data.link);
+        res.send({status: "initialized", link: body.data.link})
       }
-  });
-    // const createdPurchase = await newPurchase.save();
-    // const [shop] = await shopModel.find({id: req.body.vendor_id}).exec();
-    // await dispatchModel.updateOne({name: shop.dispatch_rider}, {$inc: {revenue: createdPurchase.dispatch_amount}});
-    // res.send({..._.pick(createdPurchase, ["id", "amount", "vendor_amount", "dispatch_amount"])});
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
-exports.confirmPurchase = async function(req) {
+exports.confirmPurchase = async function (req) {
   try {
-    await purchaseModel.updateOne({tx_ref: req.query.tx_ref}, {$set: {status: "verified"}});
-    const [purchase] = await purchaseModel.find({tx_ref: req.query.tx_ref}).exec();
-    await itemModel.updateOne({id: purchase.item_id}, {$inc: {quantity: -purchase.item_quantity}});
-    await shopModel.updateOne({id: purchase.shop_id, items: {$elemMatch: {id: purchase.item_id}}}, {$inc: {"items.$.quantity": -purchase.item_quantity}});
-    await shopModel.updateOne({id: purchase.shop_id}, {$inc: {revenue: purchase.vendor_amount}});
-    const model = purchase.purchase_role == "vendor"? vendorModel : purchase.purchase_role == "client" ? clientModel : dispatchModel
-    await model.updateOne({id: req.user.id}, {$push: {bought_items: {..._.pick(purchase, ["item_id","item_name", "item_quantity", "shop_id", "tx_ref"])}}});
-    const [shop] = await shopModel.find({id: purchase.shop_id}).exec();
-    await dispatchModel.updateOne({name: shop.dispatch_rider}, {$inc: {revenue: purchase.dispatch_amount}});
+    await purchaseModel.updateOne(
+      { tx_ref: req.query.tx_ref },
+      { $set: { status: "verified" } }
+    );
+    const [purchase] = await purchaseModel
+      .find({ tx_ref: req.query.tx_ref })
+      .exec();
+    await itemModel.updateOne(
+      { id: purchase.item_id },
+      { $inc: { quantity: -purchase.item_quantity } }
+    );
+    await shopModel.updateOne(
+      { id: purchase.shop_id, items: { $elemMatch: { id: purchase.item_id } } },
+      { $inc: { "items.$.quantity": -purchase.item_quantity } }
+    );
+    await shopModel.updateOne(
+      { id: purchase.shop_id },
+      { $inc: { revenue: purchase.vendor_amount } }
+    );
+    const model =
+      purchase.purchase_role == "vendor"
+        ? vendorModel
+        : purchase.purchase_role == "client"
+        ? clientModel
+        : dispatchModel;
+    await model.updateOne(
+      { id: req.user.id },
+      {
+        $push: {
+          bought_items: {
+            ..._.pick(purchase, [
+              "item_id",
+              "item_name",
+              "item_quantity",
+              "shop_id",
+              "tx_ref",
+            ]),
+          },
+        },
+      }
+    );
+    const [shop] = await shopModel.find({ id: purchase.shop_id }).exec();
+    await dispatchModel.updateOne(
+      { name: shop.dispatch_rider },
+      { $inc: { revenue: purchase.dispatch_amount } }
+    );
   } catch (error) {
     console.log(error);
   }
-}
+};

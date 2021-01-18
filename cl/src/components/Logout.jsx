@@ -1,10 +1,13 @@
 import React from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 function Logout(props) {
   const history = useHistory();
-  axios
+
+  function handleClick() {
+    axios
     .get("http://localhost:9000/logout", { withCredentials: true })
     .then((res) => {
       if (res.data.status === "success") {
@@ -12,8 +15,9 @@ function Logout(props) {
         history.push("/");
       }
     });
+  }
 
-  return <h1>Bye</h1>;
+  return <Button className="btn-lg btn-dark" onClick={handleClick}>Log Out</Button>;
 }
 
 export default Logout;

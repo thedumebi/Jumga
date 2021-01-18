@@ -23,6 +23,7 @@ function Shop(props) {
                   quantity={item.quantity}
                   currency={item.currency}
                   shopImage={item.image}
+                  user={props.user}
                 />
               );
             })}

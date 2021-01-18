@@ -23,6 +23,7 @@ const verifyTransaction = require("./create/shopPayment");
 const clientModel = require("./models/clients.model");
 const dispatchModel = require("./models/dispatch.model");
 const purchaseModel = require("./models/purchases.model");
+const { createNewShop, createShopPayment } = require("./create/shopPay");
 
 const app = express();
 
@@ -134,7 +135,8 @@ app.route("/createshop")
     res.render("createshop");
   })
   .post(ensureOnlyVendor, function (req, res) {
-    makeShopPayment(req, res);
+    // makeShopPayment(req, res);
+    createShopPayment(req, res);
   });
   
 app.get("/shops", function(req, res) {
@@ -223,8 +225,21 @@ app.route("/items/:itemId/buy")
 
 app.get("/success", function(req, res) {
   if (req.isAuthenticated()) {
+    console.log(req.query);
     if (req.query.status == "successful") {
       verifyTransaction.verifyTransaction(req.query.transaction_id, req, confirmPurchase);
+      res.render("success");
+    } 
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.get("/shoppayment", function(req, res) {
+  if (req.isAuthenticated()) {
+    console.log(req.query);
+    if (req.query.status == "successful") {
+      verifyTransaction.verifyTransaction(req.query.transaction_id, req, createNewShop);
       res.render("success");
     } 
   } else {

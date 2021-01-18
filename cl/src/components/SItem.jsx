@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Row } from "react-bootstrap";
 
-function SItem() {
+function SItem(props) {
   let { itemId } = useParams();
   const [item, setItem] = useState({});
 
@@ -22,12 +22,15 @@ function SItem() {
     <div>
       <Row>
         <Item
+          id={item.id}s
           name={item.name}
           currency={item.currency}
           price={item.price}
           quantity={item.quantity}
           single={true}
           image={item.image}
+          vendor_id={item.vendor_id}
+          user={props.user}
         />
       </Row>
     </div>

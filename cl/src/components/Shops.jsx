@@ -3,14 +3,13 @@ import axios from "axios";
 import Shop from "./Shop";
 import { Row, Col, Container } from "react-bootstrap";
 
-function Shops() {
+function Shops(props) {
   const [shops, setShops] = useState([]);
 
   useEffect(() => {
     axios
       .get("http://localhost:9000/shops/", { withCredentials: true })
       .then((res) => {
-        console.log(res.data.shops)
         setShops(res.data.shops);
       });
   }, []);
@@ -26,6 +25,7 @@ function Shops() {
                   id={shop.id}
                   name={shop.name}
                   items={shop.items}
+                  user={props.user}
                 />
               </Col>
             );

@@ -3,14 +3,13 @@ import axios from "axios";
 import Item from "./Item";
 import { Row, Col, Container } from "react-bootstrap";
 
-function Items() {
+function Items(props) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
     axios
       .get("http://localhost:9000/items", { withCredentials: true })
       .then((res) => {
-        console.log(res.data.items)
         setItems(res.data.items);
       });
   }, []);
@@ -29,6 +28,8 @@ function Items() {
                 price={item.price}
                 quantity={item.quantity}
                 image={item.image}
+                vendor_id={item.vendor_id}
+                user={props.user}
               />
             </Col>
           );

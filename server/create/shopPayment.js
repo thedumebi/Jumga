@@ -10,14 +10,14 @@ exports.makeShopPayment = function(req, res) {
     const tx_ref = crypto.randomBytes(16).toString("hex");
     const text = JSON.stringify({
         tx_ref: tx_ref,
-        card_number: "5531886652142950",
-        cvv: "564",
-        expiry_month :"09",
-        expiry_year : "32",
+        card_number: req.body.card_number,
+        cvv: req.body.cvv,
+        expiry_month : req.body.expiry_month,
+        expiry_year : req.body.expiry_year,
         currency : "USD",
         authorization : {
             mode:"pin",
-            pin:"3310"
+            pin: req.body.pin
         },
         amount: shopFee,
         email: req.user.username,
