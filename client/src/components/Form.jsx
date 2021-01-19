@@ -31,7 +31,7 @@ function Login(props) {
   }
 
   function submitRegister() {
-    const url = "http://localhost:9000/register";
+    const url = "/api/register";
     axios.post(url, register, { withCredentials: true }).then((res) => {
       if (res.data.status === "success") {
         history.push(
@@ -54,12 +54,12 @@ function Login(props) {
   }
 
   function submitLogin() {
-    const url = "http://localhost:9000/login";
+    const url = "/api/login";
     axios
       .post(url, login, { withCredentials: true })
       .then((res) => {
         if (res.data.status === "success") {
-          props.user(res.data.user)
+          props.user(res.data.user);
           history.push(
             res.data.user.role === "vendor"
               ? "/vendor"
@@ -70,17 +70,10 @@ function Login(props) {
           props.logged(true);
         } else {
           history.push("/login");
-          alert(res.data.message)
+          alert(res.data.message);
         }
-        
       })
       .catch((err) => console.log(err));
-    // fetch(url, {
-    //   credentials: "same-origin",
-    //   method: "POST",
-    //   body: JSON.stringify(login),
-    //   headers: { "Content-type": "application/json" },
-    // }).then((res) => console.log(res));
   }
 
   return (

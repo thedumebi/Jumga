@@ -9,7 +9,7 @@ function Purchase() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:9000/purchase/${tx_ref}`, {
+      .get(`/api/purchase/${tx_ref}`, {
         withCredentials: true,
       })
       .then((res) => {

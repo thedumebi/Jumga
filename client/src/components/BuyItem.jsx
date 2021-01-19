@@ -21,7 +21,7 @@ function BuyItem(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:9000/items/${itemId}`, {
+      .get(`/api/items/${itemId}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -55,7 +55,7 @@ function BuyItem(props) {
   }
 
   function buyItem() {
-    const url = `http://localhost:9000/items/${itemId}/buy`;
+    const url = `/api/items/${itemId}/buy`;
     axios.post(url, buy, { withCredentials: true }).then((res) => {
       if (res.data.status === "initialized") {
         window.location.replace(res.data.link);

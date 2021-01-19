@@ -35,7 +35,7 @@ function AddItem() {
           data.append(name, item[name])
       }
       data.append("image", image);
-    const url = `http://localhost:9000/vendor/${shopId}/additem`;
+    const url = `/api/vendor/${shopId}/additem`;
     axios.post(url, data, { withCredentials: true }).then((res) => {
       console.log(res);
       history.push(`/items/${res.data.itemId}`);

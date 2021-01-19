@@ -8,7 +8,7 @@ function Shops(props) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:9000/shops/", { withCredentials: true })
+      .get("/api/shops/", { withCredentials: true })
       .then((res) => {
         setShops(res.data.shops);
       });

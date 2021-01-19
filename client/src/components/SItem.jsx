@@ -10,7 +10,7 @@ function SItem(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:9000/items/${itemId}`, {
+      .get(`/api/items/${itemId}`, {
         withCredentials: true,
       })
       .then((res) => {

@@ -120,7 +120,7 @@ exports.confirmPurchase = async function (req) {
     );
     const [shop] = await shopModel.find({ id: purchase.shop_id }).exec();
     await dispatchModel.updateOne(
-      { name: shop.dispatch_rider },
+      { id: shop.dispatch_rider.id },
       { $inc: { revenue: purchase.dispatch_amount } }
     );
   } catch (error) {

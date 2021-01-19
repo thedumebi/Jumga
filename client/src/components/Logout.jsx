@@ -8,7 +8,7 @@ function Logout(props) {
 
   function handleClick() {
     axios
-    .get("http://localhost:9000/logout", { withCredentials: true })
+    .get("/api/logout", { withCredentials: true })
     .then((res) => {
       if (res.data.status === "success") {
         props.user(null);

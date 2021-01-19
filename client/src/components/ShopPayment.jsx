@@ -12,9 +12,8 @@ function ShopPayment() {
   const [status, setStatus] = useState(false);
 
   function verify() {
-    const url = `http://localhost:9000/shoppayment?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`;
+    const url = `/api/shoppayment?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`;
     axios.get(url, { withCredentials: true }).then((res) => {
-      console.log(res);
       if (res.status === 200) {
         setStatus(true);
       }

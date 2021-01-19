@@ -10,7 +10,7 @@ function SShop(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:9000/shops/${shopId}`, {
+      .get(`/api/shops/${shopId}`, {
         withCredentials: true,
       })
       .then((res) => {

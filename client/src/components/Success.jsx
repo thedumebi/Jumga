@@ -12,7 +12,7 @@ function Success() {
   const [status, setStatus] = useState(false);
 
   function verify() {
-    const url = `http://localhost:9000/success?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`;
+    const url = `/api/success?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`;
     axios.get(url, { withCredentials: true }).then((res) => {
       if (res.status === 200) {
         setStatus(true);
@@ -26,11 +26,11 @@ function Success() {
         <div>
           <h4 className="sub-heading">Transaction completed succesfully</h4>
           <Link to={`purchase/${query2}`}>
-            <Button className="btn-dark ">view receipt</Button>
+            <Button className="btn-dark">view receipt</Button>
           </Link>
         </div>
       ) : (
-        <Button onClick={verify}>Confirm your Transaction</Button>
+        <Button className="btn-dark" onClick={verify}>Confirm your Transaction</Button>
       )}
     </div>
   );

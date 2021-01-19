@@ -5,6 +5,7 @@ const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
 const multer = require("multer");
+const path = require("path");
 const { connectDB } = require("./database.utils");
 const { createItem } = require("./controller/items");
 const { createVendor } = require("./controller/vendor");
@@ -14,16 +15,13 @@ const { loginClient } = require("./login/clients.login");
 const { addFavorite } = require("./controller/favorite");
 const { loginDispatch } = require("./login/dispatch.login");
 const { createDispatch } = require("./controller/dispatch");
+const { ensureOnlyVendor } = require("./controller/control");
 const { removeFavorite } = require("./controller/unfavorite");
 const { createNewShop, createShopPayment } = require("./controller/shopPay");
 const { createPurchase, confirmPurchase } = require("./controller/purchases");
-const { ensureOnlyVendor, ensureOnlyClient, ensureOnlyDispatch } = require("./controller/control");
 const verifyTransaction = require("./controller/shopPayment");
-const vendorModel = require("./models/vendors.models");
 const shopModel = require("./models/shops.model");
 const itemModel = require("./models/items.model");
-const clientModel = require("./models/clients.model");
-const dispatchModel = require("./models/dispatch.model");
 const purchaseModel = require("./models/purchases.model");
 
 const app = express();
@@ -32,6 +30,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/public"));
+app.use(express.static(path.join(__dirname, "..", "/client/build")));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -63,11 +62,7 @@ const upload = multer({
 
 connectDB();
 
-app.get("/", function (req, res) {
-  res.render("home");
-});
-
-app.route("/register")
+app.route("/api/register")
   .get(function (req, res) {
     res.render("register");
   })
@@ -81,7 +76,7 @@ app.route("/register")
     }
   });
 
-app.route("/login")
+app.route("/api/login")
   .get(function (req, res) {
     res.render("login");
   })
@@ -95,12 +90,12 @@ app.route("/login")
     }
   });
 
-app.post("/createshop", ensureOnlyVendor, function (req, res) {
+app.post("/api/createshop", ensureOnlyVendor, function (req, res) {
     // makeShopPayment(req, res);
     createShopPayment(req, res);
   });
   
-app.get("/shops", function(req, res) {
+app.get("/api/shops", function(req, res) {
   shopModel.find(function(err, shops) {
     if (err) {
       console.log(err);
@@ -110,7 +105,7 @@ app.get("/shops", function(req, res) {
   });
 });
 
-app.get("/shops/:shopId", function (req, res) {
+app.get("/api/shops/:shopId", function (req, res) {
   const shopId = req.params.shopId;
   shopModel.find({id: shopId}, function(err, foundShop) {
     if (!err) {
@@ -121,11 +116,11 @@ app.get("/shops/:shopId", function (req, res) {
   });
 });
 
-app.post("/vendor/:shopId/additem", ensureOnlyVendor, upload.single("image"), function (req, res) {
+app.post("/api/vendor/:shopId/additem", ensureOnlyVendor, upload.single("image"), function (req, res) {
     createItem(req, res);
   });
 
-app.get("/items", function(req, res) {
+app.get("/api/items", function(req, res) {
   itemModel.find(function(err, foundItems) {
     if (!err) {
       if (foundItems) {
@@ -137,7 +132,7 @@ app.get("/items", function(req, res) {
   });
 });
 
-app.get("/items/:itemId", function(req, res) {
+app.get("/api/items/:itemId", function(req, res) {
   const itemId = req.params.itemId;
   itemModel.findOne({id: itemId}, function(err, foundItem) {
     if (!err) {
@@ -146,45 +141,47 @@ app.get("/items/:itemId", function(req, res) {
   });
 });
 
-app.get("/items/:itemId/favorite", function(req, res) {
+app.get("/api/items/:itemId/favorite", function(req, res) {
   if (req.isAuthenticated()) {
     addFavorite(req, res);
   }
 });
 
-app.get("/items/:itemId/unfavorite", async function(req, res) {
+app.get("/api/items/:itemId/unfavorite", async function(req, res) {
   if (req.isAuthenticated()) {
     removeFavorite(req, res);
   }
 });
 
-app.post("/items/:itemId/buy", function(req, res) {
+app.post("/api/items/:itemId/buy", function(req, res) {
   if (req.isAuthenticated()) {
     createPurchase(req, res);
   }
 });
 
-app.get("/success", function(req, res) {
+app.get("/api/success", function(req, res) {
   if (req.isAuthenticated()) {
     if (req.query.status == "successful") {
       verifyTransaction.verifyTransaction(req.query.transaction_id, req, confirmPurchase);
+      res.status(200).json({status: "success"});
     } 
   } else {
     res.send({status: "failed"});
   }
 });
 
-app.get("/shoppayment", function(req, res) {
+app.get("/api/shoppayment", function(req, res) {
   if (req.isAuthenticated()) {
     if (req.query.status == "successful") {
       verifyTransaction.verifyTransaction(req.query.transaction_id, req, createNewShop);
+      res.status(200).json({status: "success"});
     } 
   } else {
     res.send({status: "failed"});
   }
 });
 
-app.get("/purchase/:purchaseId", function(req, res) {
+app.get("/api/purchase/:purchaseId", function(req, res) {
   const purchaseId = req.params.purchaseId
   if (req.isAuthenticated()) {
     purchaseModel.findOne({tx_ref: purchaseId}, function(err, foundPurchase) {
@@ -199,7 +196,7 @@ app.get("/purchase/:purchaseId", function(req, res) {
   }
 });
 
-app.get("/checkAuthentication", function(req, res) {
+app.get("/api/checkAuthentication", function(req, res) {
   const authenticated= Boolean(req.user !== "undefined");
   if (req.isAuthenticated()) {
     const user = req.user
@@ -209,10 +206,14 @@ app.get("/checkAuthentication", function(req, res) {
   }
 });
 
-app.get("/logout", function (req, res) {
+app.get("/api/logout", function (req, res) {
   req.logout();
   res.status(200).json({status: "success"});
 });
+
+app.get("*", function(req, res) {
+  res.sendFile(path.join(__dirname, "..", "/client/build/index.html"))
+})
 
 let port = process.env.PORT;
 if (port == null || port == "") {

@@ -22,7 +22,7 @@ function RegisterShop(props) {
   }
 
   function addShop() {
-    const url = "http://localhost:9000/createshop";
+    const url = "/api/createshop";
     axios.post(url, shop, { withCredentials: true }).then((res) => {
       console.log(res);
       if (res.data.status === "initialized") {

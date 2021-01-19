@@ -8,7 +8,7 @@ function Items(props) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:9000/items", { withCredentials: true })
+      .get("/api/items", { withCredentials: true })
       .then((res) => {
         setItems(res.data.items);
       });

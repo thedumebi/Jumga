@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:9000/checkAuthentication", {
+      .get("/api/checkAuthentication", {
         withCredentials: true,
       })
       .then((res) => {

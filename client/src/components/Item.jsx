@@ -25,7 +25,7 @@ function Item(props) {
   }
 
   function addFavorite(event) {
-    const url = `http://localhost:9000/items/${props.id}/favorite`;
+    const url = `/api/items/${props.id}/favorite`;
     axios.get(url, { withCredentials: true }).then((res) => {
       if (res.data.status === "success") {
         <Alert variant="success"><p>Item successfully added to your favorites</p></Alert>
@@ -36,7 +36,7 @@ function Item(props) {
   }
 
   function removeFavorite(event) {
-    const url = `http://localhost:9000/items/${props.id}/unfavorite`;
+    const url = `/api/items/${props.id}/unfavorite`;
     axios.get(url, { withCredentials: true }).then((res) => {
       if (res.data.status === "success") {
         setValue(!value);
