@@ -18,6 +18,7 @@ const clientSchema = new mongoose.Schema({
   phone_number: String,
   role: String,
   bought_items: Array,
+  favorites: Array,
   created_at: {
     type: Date,
     default: Date.now(),

@@ -2,9 +2,6 @@ const _ = require("lodash");
 const crypto = require("crypto");
 const shopPaymentModel = require("../models/shopPayment.model");
 const request = require("request");
-const shopModel = require("../models/shops.model");
-const { assignDispatch } = require("./assignDispatch");
-const vendorModel = require("../models/vendors.models");
 const { createShop } = require("./shops");
 
 exports.createShopPayment = async function (req, res) {

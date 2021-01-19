@@ -26,7 +26,7 @@ function BuyItem(props) {
       })
       .then((res) => {
         setItem(res.data.item);
-        alert(`There are ${res.data.item.quantity} left in stock`);
+        props.user && alert(`There are ${res.data.item.quantity} left in stock`);
         setBuy({
           name: res.data.item.name,
           price: res.data.item.price,
@@ -45,7 +45,7 @@ function BuyItem(props) {
               : 30,
         });
       });
-  }, [itemId]);
+  }, [itemId, props.user]);
 
   function handleChange(event) {
     const { name, value } = event.target;

@@ -6,24 +6,25 @@ const session = require("express-session");
 const passport = require("passport");
 const multer = require("multer");
 const { connectDB } = require("./database.utils");
-const { createVendor } = require("./create/vendor");
-const { createClient } = require("./create/clients");
-const { createDispatch } = require("./create/dispatch");
+const { createItem } = require("./controller/items");
+const { createVendor } = require("./controller/vendor");
+const { createClient } = require("./controller/clients");
 const { loginVendor } = require("./login/vendors.login");
 const { loginClient } = require("./login/clients.login");
+const { addFavorite } = require("./controller/favorite");
 const { loginDispatch } = require("./login/dispatch.login");
-const { ensureOnlyVendor, ensureOnlyClient, ensureOnlyDispatch } = require("./models/control");
+const { createDispatch } = require("./controller/dispatch");
+const { removeFavorite } = require("./controller/unfavorite");
+const { createNewShop, createShopPayment } = require("./controller/shopPay");
+const { createPurchase, confirmPurchase } = require("./controller/purchases");
+const { ensureOnlyVendor, ensureOnlyClient, ensureOnlyDispatch } = require("./controller/control");
+const verifyTransaction = require("./controller/shopPayment");
 const vendorModel = require("./models/vendors.models");
-const { makeShopPayment } = require("./create/shopPayment");
 const shopModel = require("./models/shops.model");
-const { createItem } = require("./create/items");
 const itemModel = require("./models/items.model");
-const { createPurchase, confirmPurchase } = require("./create/purchases");
-const verifyTransaction = require("./create/shopPayment");
 const clientModel = require("./models/clients.model");
 const dispatchModel = require("./models/dispatch.model");
 const purchaseModel = require("./models/purchases.model");
-const { createNewShop, createShopPayment } = require("./create/shopPay");
 
 const app = express();
 
@@ -94,47 +95,7 @@ app.route("/login")
     }
   });
 
-app.get("/vendor", ensureOnlyVendor, function (req, res) {
-  vendorModel.findById(req.user._id, function (err, foundVendor) {
-    if (err) {
-      console.log(err);
-    } else {
-      if (foundVendor) {
-        res.render("user", { user: foundVendor });
-      }
-    }
-  });
-});
-
-app.get("/client", ensureOnlyClient, function (req, res) {
-  clientModel.findById(req.user._id, function (err, foundClient) {
-    if (err) {
-      console.log(err);
-    } else {
-      if (foundClient) {
-        res.render("user", { user: foundClient });
-      }
-    }
-  });
-});
-
-app.get("/dispatch", ensureOnlyDispatch, function (req, res) {
-  dispatchModel.findById(req.user._id, function (err, foundDispatch) {
-    if (err) {
-      console.log(err);
-    } else {
-      if (foundDispatch) {
-        res.render("user", { user: foundDispatch });
-      }
-    }
-  });
-});
-
-app.route("/createshop")
-  .get(ensureOnlyVendor, function (req, res) {
-    res.render("createshop");
-  })
-  .post(ensureOnlyVendor, function (req, res) {
+app.post("/createshop", ensureOnlyVendor, function (req, res) {
     // makeShopPayment(req, res);
     createShopPayment(req, res);
   });
@@ -153,24 +114,14 @@ app.get("/shops/:shopId", function (req, res) {
   const shopId = req.params.shopId;
   shopModel.find({id: shopId}, function(err, foundShop) {
     if (!err) {
-      // res.render("shop", {shop: foundShop, user: req.user});
       res.status(200).json({shop: foundShop});
     } else {
-      res.send("shop does not exist");
+      res.send({status: "shop does not exist"});
     }
   });
 });
 
-app.route("/vendor/:shopId/additem")
-  .get(ensureOnlyVendor, function (req, res) {
-    const shopId = req.params.shopId;
-    shopModel.findOne({id: shopId}, function(err, foundShop) {
-      if (!err) {
-        res.render("addItem", { shop: foundShop });
-      }
-    });
-  })
-  .post(ensureOnlyVendor, upload.single("image"), function (req, res) {
+app.post("/vendor/:shopId/additem", ensureOnlyVendor, upload.single("image"), function (req, res) {
     createItem(req, res);
   });
 
@@ -178,10 +129,9 @@ app.get("/items", function(req, res) {
   itemModel.find(function(err, foundItems) {
     if (!err) {
       if (foundItems) {
-        // res.render("items", {items: foundItems})
         res.status(200).json({items: foundItems});
       } else {
-        res.redirect("/");
+        res.send({status: "there are no items yet"});
       }
     }
   });
@@ -191,59 +141,46 @@ app.get("/items/:itemId", function(req, res) {
   const itemId = req.params.itemId;
   itemModel.findOne({id: itemId}, function(err, foundItem) {
     if (!err) {
-      // res.render("item", {item: foundItem, user: req.user});
       res.status(200).json({item: foundItem});
     }
   });
 });
 
-app.route("/items/:itemId/buy")
-.get(function(req, res) {
-  const itemId = req.params.itemId
+app.get("/items/:itemId/favorite", function(req, res) {
   if (req.isAuthenticated()) {
-    itemModel.findOne({id: itemId}, function(err, foundItem) {
-      if (!err) {
-        if (req.user.role == "vendor" && req.user.id == foundItem.vendor_id) {
-          res.redirect("/shops");
-        } else {
-          res.render("buyItem", {item: foundItem, user: req.user});
-        }
-      }
-    });
-  } else {
-    res.redirect("/login");
+    addFavorite(req, res);
   }
-})
-.post(function(req, res) {
-  const itemId = req.params.itemId
+});
+
+app.get("/items/:itemId/unfavorite", async function(req, res) {
+  if (req.isAuthenticated()) {
+    removeFavorite(req, res);
+  }
+});
+
+app.post("/items/:itemId/buy", function(req, res) {
   if (req.isAuthenticated()) {
     createPurchase(req, res);
-  } else {
-    res.redirect("/login");
   }
 });
 
 app.get("/success", function(req, res) {
   if (req.isAuthenticated()) {
-    console.log(req.query);
     if (req.query.status == "successful") {
       verifyTransaction.verifyTransaction(req.query.transaction_id, req, confirmPurchase);
-      res.render("success");
     } 
   } else {
-    res.redirect("/");
+    res.send({status: "failed"});
   }
 });
 
 app.get("/shoppayment", function(req, res) {
   if (req.isAuthenticated()) {
-    console.log(req.query);
     if (req.query.status == "successful") {
       verifyTransaction.verifyTransaction(req.query.transaction_id, req, createNewShop);
-      res.render("success");
     } 
   } else {
-    res.redirect("/");
+    res.send({status: "failed"});
   }
 });
 
@@ -252,17 +189,13 @@ app.get("/purchase/:purchaseId", function(req, res) {
   if (req.isAuthenticated()) {
     purchaseModel.findOne({tx_ref: purchaseId}, function(err, foundPurchase) {
       if (req.user.role == foundPurchase.purchase_role && req.user.id == foundPurchase.user_id) {
-        // res.render("purchase", {purchase: foundPurchase});
         res.status(200).json({purchase: foundPurchase});
       } else {
-        // res.redirect("/login");
         res.status(200).json({status: "fail"})
       }
     });
   } else {
-    console.log(res.statusCode);
     res.status(200).json({status: "fail"})
-    // res.redirect("/login");
   }
 });
 
@@ -278,7 +211,6 @@ app.get("/checkAuthentication", function(req, res) {
 
 app.get("/logout", function (req, res) {
   req.logout();
-  // res.redirect("/");
   res.status(200).json({status: "success"});
 });
 

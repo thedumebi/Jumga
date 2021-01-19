@@ -11,16 +11,14 @@ function Success() {
   );
   const [status, setStatus] = useState(false);
 
-  axios
-    .get(
-      `http://localhost:9000/success?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`,
-      { withCredentials: true }
-    )
-    .then((res) => {
+  function verify() {
+    const url = `http://localhost:9000/success?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`;
+    axios.get(url, { withCredentials: true }).then((res) => {
       if (res.status === 200) {
         setStatus(true);
       }
     });
+  }
 
   return (
     <div>
@@ -32,9 +30,7 @@ function Success() {
           </Link>
         </div>
       ) : (
-        <h4 className="sub-heading">
-          Please wait while your transaction is processing
-        </h4>
+        <Button onClick={verify}>Confirm your Transaction</Button>
       )}
     </div>
   );

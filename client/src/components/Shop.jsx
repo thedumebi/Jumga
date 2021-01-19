@@ -37,7 +37,7 @@ function Shop(props) {
         )}
         {props.user &&
           props.user.role === "vendor" &&
-          props.user.id === props.id && (
+          props.user.id === props.vendor_id && (
             <Link to={`/vendor/${props.id}/additem`}>
               <Button className="btn-dark">Add a new item</Button>
             </Link>

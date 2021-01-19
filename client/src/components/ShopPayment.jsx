@@ -11,31 +11,31 @@ function ShopPayment() {
   );
   const [status, setStatus] = useState(false);
 
-  axios
-    .get(
-      `http://localhost:9000/shoppayment?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`,
-      { withCredentials: true }
-    )
-    .then((res) => {
+  function verify() {
+    const url = `http://localhost:9000/shoppayment?status=${query1}&tx_ref=${query2}&transaction_id=${query3}`;
+    axios.get(url, { withCredentials: true }).then((res) => {
       console.log(res);
       if (res.status === 200) {
         setStatus(true);
       }
     });
+  }
 
   return (
     <div>
       {status ? (
         <div>
-          <h4 className="sub-heading">Transaction completed succesfully, your shop has been approved!</h4>
+          <h4 className="sub-heading">
+            Transaction completed succesfully, your shop has been approved!
+          </h4>
           <Link to="/vendor">
             <Button className="btn-dark ">visit account</Button>
           </Link>
         </div>
       ) : (
-        <h4 className="sub-heading">
-          Please wait while your transaction is processing
-        </h4>
+        <Button className="btn-lg, btn-dark" onClick={verify}>
+          Confirm your Transaction
+        </Button>
       )}
     </div>
   );

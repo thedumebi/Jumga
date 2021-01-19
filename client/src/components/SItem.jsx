@@ -22,7 +22,7 @@ function SItem(props) {
     <div>
       <Row>
         <Item
-          id={item.id}s
+          id={item.id}
           name={item.name}
           currency={item.currency}
           price={item.price}

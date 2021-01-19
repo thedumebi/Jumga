@@ -17,6 +17,8 @@ import BuyItem from "./BuyItem";
 import ErrorPage from "./ErrorPage";
 import Success from "./Success";
 import ShopPayment from "./ShopPayment";
+import History from "./History";
+import Favorite from "./Favorite";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -101,6 +103,12 @@ function App() {
               </Route>
               <Route exact path="/registershop">
                 <RegisterShop user={user} />
+              </Route>
+              <Route exact path="/history">
+                <History user={user} />
+              </Route>
+              <Route exact path="/favorites">
+                <Favorite user={user} />
               </Route>
             </div>
           )}

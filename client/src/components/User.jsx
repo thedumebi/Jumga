@@ -5,10 +5,10 @@ import { Container, Button, Row, Col } from "react-bootstrap";
 import Bought from "./Bought";
 
 function User(props) {
-  const {path} = useRouteMatch();
-  const userType = path.slice(1,path.length)
+  const { path } = useRouteMatch();
+  const userType = path.slice(1, path.length);
   if (props.user.role !== userType) {
-    return <Redirect to="/" />
+    return <Redirect to="/" />;
   }
   return (
     <Container>
@@ -18,13 +18,8 @@ function User(props) {
           <Row>
             {props.user.shops.map((shop) => {
               return (
-                <Col lg={6}>
-                  <Shop
-                    key={shop.id}
-                    id={shop.id}
-                    name={shop.name}
-                    country={shop.country}
-                  />
+                <Col lg={6} key={shop.id}>
+                  <Shop id={shop.id} name={shop.name} country={shop.country} />
                 </Col>
               );
             })}
@@ -32,18 +27,26 @@ function User(props) {
         )}
         {props.user.role === "dispatch" && (
           <div>
-            <p>{props.user.shops.length === 0 ? "You currently don't have any shops under you ☹" : "These are the shops you make deliveries for"}</p>
-            {props.user.shops &&
-              props.user.shops.map((shop) => {
-                return (
-                  <Shop
-                    key={shop.id}
-                    id={shop.id}
-                    name={shop.name}
-                    country={shop.country}
-                  />
-                );
-              })}
+            <p>
+              {props.user.shops.length === 0
+                ? "You currently don't have any shops under you ☹"
+                : "These are the shops you make deliveries for"}
+            </p>
+            {props.user.shops && (
+              <Row>
+                {props.user.shops.map((shop) => {
+                  return (
+                    <Col lg={4} key={shop.id}>
+                      <Shop
+                        id={shop.id}
+                        name={shop.name}
+                        country={shop.country}
+                      />
+                    </Col>
+                  );
+                })}
+              </Row>
+            )}
           </div>
         )}
         {props.user.role === "client" && (
@@ -64,9 +67,8 @@ function User(props) {
             <Row>
               {props.user.bought_items.map((item) => {
                 return (
-                  <Col lg={4}>
+                  <Col lg={4} key={item.tx_ref}>
                     <Bought
-                      key={item.tx_ref}
                       name={item.item_name}
                       quantity={item.item_quantity}
                       tx_ref={item.tx_ref}

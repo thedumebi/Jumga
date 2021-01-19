@@ -19,9 +19,8 @@ function Items(props) {
       <Row>
         {items.map((item) => {
           return (
-            <Col lg={3}>
+            <Col lg={3} key={item._id}>
               <Item
-                key={item._id}
                 id={item.id}
                 name={item.name}
                 currency={item.currency}

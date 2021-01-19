@@ -1,8 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 import { Link } from "react-router-dom";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Alert } from "react-bootstrap";
+import axios from "axios";
+import { Favorite, FavoriteBorder } from "@material-ui/icons";
+import Fab from "@material-ui/core/Fab";
 
 function Item(props) {
+  const [value, setValue] = useState(false);
   var imageSrc = "";
   function arrayBufferToBase64(buffer) {
     var binary = "";
@@ -18,6 +22,27 @@ function Item(props) {
   if (props.shopImage) {
     const base64Flag = `data:${props.shopImage.contentType};base64,`;
     imageSrc = base64Flag + props.shopImage.data;
+  }
+
+  function addFavorite(event) {
+    const url = `http://localhost:9000/items/${props.id}/favorite`;
+    axios.get(url, { withCredentials: true }).then((res) => {
+      if (res.data.status === "success") {
+        <Alert variant="success"><p>Item successfully added to your favorites</p></Alert>
+        setValue(!value);
+      }
+    });
+    event.preventDefault();
+  }
+
+  function removeFavorite(event) {
+    const url = `http://localhost:9000/items/${props.id}/unfavorite`;
+    axios.get(url, { withCredentials: true }).then((res) => {
+      if (res.data.status === "success") {
+        setValue(!value);
+      }
+    });
+    event.preventDefault();
   }
 
   return (
@@ -47,6 +72,32 @@ function Item(props) {
             </Button>
           </Link>
         )}
+        {props.single &&
+          props.user &&
+          props.user.role === "vendor" &&
+          props.user.id !== props.vendor_id &&
+          !props.user.favorites.includes(
+            props.user.favorites.find((el) => el.id === props.id)
+          ) && <Fab onClick={addFavorite}><FavoriteBorder /></Fab>}
+        {props.single &&
+          props.user &&
+          props.user.role !== "vendor" &&
+          !props.user.favorites.includes(
+            props.user.favorites.find((el) => el.id === props.id)
+          ) && <Fab onClick={addFavorite}><FavoriteBorder /></Fab>}
+        {props.single &&
+          props.user &&
+          props.user.role === "vendor" &&
+          props.user.id !== props.vendor_id &&
+          props.user.favorites.includes(
+            props.user.favorites.find((el) => el.id === props.id)
+          ) && <Fab onClick={removeFavorite}><Favorite /></Fab>}
+        {props.single &&
+          props.user &&
+          props.user.role !== "vendor" &&
+          props.user.favorites.includes(
+            props.user.favorites.find((el) => el.id === props.id)
+          ) && <Fab onClick={removeFavorite}><Favorite /></Fab>}
         {props.user &&
           props.vendor_id &&
           props.user.role === "vendor" &&

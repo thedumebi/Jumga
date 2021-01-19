@@ -30,6 +30,7 @@ function SShop(props) {
             country={shop.country}
             items={shop.items}
             user={props.user}
+            vendor_id={shop.vendor_id}
             single={true}
           />
         );

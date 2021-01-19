@@ -16,21 +16,21 @@ function Shops(props) {
 
   return (
     <Container>
-        <Row>
-          {shops.map((shop) => {
-            return (
-              <Col lg={4}>
-                <Shop
-                  key={shop._id}
-                  id={shop.id}
-                  name={shop.name}
-                  items={shop.items}
-                  user={props.user}
-                />
-              </Col>
-            );
-          })}
-        </Row>
+      <Row>
+        {shops.map((shop) => {
+          return (
+            <Col lg={4} key={shop._id}>
+              <Shop
+                id={shop.id}
+                name={shop.name}
+                items={shop.items}
+                vendor_id={shop.vendor_id}
+                user={props.user}
+              />
+            </Col>
+          );
+        })}
+      </Row>
     </Container>
   );
 }

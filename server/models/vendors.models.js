@@ -11,7 +11,10 @@ const vendorSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  username: String,
+  username: {
+    type: String,
+    unique: true
+  },
   name: String,
   password: String,
   phone_number: String,
@@ -19,6 +22,7 @@ const vendorSchema = new mongoose.Schema({
   role: String,
   country: String,
   bought_items: Array,
+  favorites: Array,
   created_at: {
     type: Date,
     default: Date.now(),
