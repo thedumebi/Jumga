@@ -35,7 +35,7 @@ Any type of user can buy items/ add to favorites but for vendors, they cannot bu
 
 I opted to use the "/payment" endpoint instead of the "/charges" so Jumga would at no point get access to the user's card details for any reason.
 
-You can visit [Named Link](https://e-jumga.herokuapp.com/ "here title") to see a demo.
+You can visit [here](https://e-jumga.herokuapp.com/ "here title") to see a demo.
 
 
 
