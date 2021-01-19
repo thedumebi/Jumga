@@ -17,7 +17,7 @@ function Logout(props) {
     });
   }
 
-  return <Button className="btn-lg btn-dark" onClick={handleClick}>Log Out</Button>;
+  return <Button className="btn-lg btn-dark" onClick={handleClick}>Log Out?</Button>;
 }
 
 export default Logout;
